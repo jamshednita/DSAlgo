@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class CME {
+abstract class ConcurModifExep {
 	
 	public static void main(String[] args) {
 		/*List<String> myList = new ArrayList<String>();
@@ -51,13 +51,18 @@ public class CME {
 			}
 		}
 		System.out.println("Map Size:"+myMap.size());*/
-		
-		modifyConcurrent();
+		int i;
+		for (i = 0; i < 10; i++) {
+			if(i==1)
+				break; // This will not let the increment step happen.
+		}
+		System.out.println(i);
+		//modifyConcurrent();
 		//subListCheck();
 	}
 
 	static void modifyConcurrent() {
-		List<String> myList = new CopyOnWriteArrayList<String>();
+		List<String> myList = new CopyOnWriteArrayList<String>();//CopyOnWriteArrayList<String>();
 
 		myList.add("1");
 		myList.add("2");
@@ -78,21 +83,22 @@ public class CME {
 		}
 		System.out.println("List Size:" + myList.size());
 
-		Map<String, String> myMap = new ConcurrentHashMap<String, String>();
+		Map<String, String> myMap = new ConcurrentHashMap<String, String>();//ConcurrentHashMap<String, String>();
 
 		myMap.put("1", "1");
 		myMap.put("2", "2");
 		myMap.put("3", "3");
+		myMap.put("7", "7");
 
 		Iterator<String> mapItr = myMap.keySet().iterator();
 
 		while (mapItr.hasNext()) {
 			String key = mapItr.next();
 
-			System.out.println(" Map Value : " + myMap.get(key));
+			System.out.println(key + "  :  Map Value : " + myMap.get(key));
 
 			if (key.equals("3")) {
-				myMap.remove("2");
+				myMap.remove("2");//myMap.remove("7");
 
 				myMap.put("4", "4");
 				myMap.put("5", "5");

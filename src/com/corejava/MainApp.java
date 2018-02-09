@@ -9,7 +9,6 @@ public class MainApp {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
 		Employee emp1 = new Employee(101, "XYZ");
 		Employee emp2 = new Employee(102, "XYZ");
 		
