@@ -568,6 +568,113 @@ public class BinarySearchTree {
 	          isSameBSTUtil(a, b, n, j+1, k+1, min, a[j]);    // Left Subtree
 	}
 	
+	/**
+	 * Description - K’th Largest Element in BST when modification to BST is not allowed. O(h+k)
+	 * 
+	 * @param root - BST's root node.
+	 * @param k - k'th largest indicator.
+	 * @return - k'th largest's node data.
+	 */
+	public static int kthLargest(Node root, int k){
+		CIndex ci = new CIndex();
+		kthLargestUtil(root, ci, k);
+		
+		return ci.ptr.getData();
+	}
+	private static void kthLargestUtil(Node root, CIndex ci, int k){
+		if(root==null || ci.index >= k)
+			return;
+		
+		kthLargestUtil(root.getRight(), ci, k);
+		if(++ci.index == k){
+			ci.ptr=root;
+			return;
+		}
+		kthLargestUtil(root.getLeft(), ci, k);
+	}
+	/**
+	 * 
+	 * Description - Check if given sorted sub-sequence exists in binary search tree. O(n)
+	 * 
+	 * @param root - BST's root node.
+	 * @param seq - Sorted sequence array.
+	 * @param ci - Index tracker
+	 * @return
+	 */
+	public static boolean isSortedSeqExistUtil(Node root, int[] seq, CIndex ci){
+		if(root==null)
+			return false;
+		
+		
+		boolean left = isSortedSeqExistUtil(root.getLeft(), seq, ci);
+		//isSortedSeqExist(root.getLeft(), seq, ci);
+		if(seq[ci.index] == root.getData()){
+			ci.index++;
+			
+			if(ci.index==seq.length) return true;
+		}
+		//isSortedSeqExist(root.getRight(), seq, ci);
+		return left || isSortedSeqExistUtil(root.getRight(), seq, ci);
+	}
+	/**
+	 * 
+	 * Description - check whether BST contains dead end. Only positive number used to form this BST.
+	 * 
+	 * @param root - Root of BST.
+	 * @param min - Min range of the current node. Should not be less than 1 as BST contains only +ve numbers.
+	 * @param max - Max range of the current node.
+	 * @return - true OR false.
+	 */
+	public static boolean isDeadEndExit(Node root, int min, int max){
+		// if the root is null or the recursion moves 
+	    // after leaf node it will return false
+	    // i.e no dead end.
+		if(root == null)
+			return false;
+		// if this occurs means dead end is present.
+		if(min==max)
+			return true;
+		
+		// heart of the recursion lies here.
+		return isDeadEndExit(root.getLeft(), min, root.getData()-1) || isDeadEndExit(root.getRight(), root.getData()+1, max);
+	}
+	/**
+	 * 
+	 * Description - Given two Binary Search Trees consisting of unique positive elements, we have to check whether the two BSTs contains same set or elements or not
+	 * 
+	 * @param root1 - First BST root
+	 * @param root2 - Second BST root
+	 * @return - true if both BST are made from same element set else false.
+	 */
+	public static boolean sameElementSetBST(Node root1, Node root2){
+		List<Integer> list1=new ArrayList<Integer>();
+		List<Integer> list2=new ArrayList<Integer>();
+		
+		getInorder(root1, list1);
+		getInorder(root2, list2);
+		
+		return list1.equals(list2);
+	}
+	/**
+	 * 
+	 * Description - We have a binary search tree and a number N. Our task is to find the greatest number in the binary search tree that is less than or equal to N. Print the value of the element if it exists otherwise print -1
+	 * 
+	 * @param node - root node of BST.
+	 * @param num - Input number against which lesser or equal needs to be checked.
+	 * @return - Returns Lesser or equal number of input num.
+	 */
+	public static int findLessOrEqualToN(Node node, int num){
+		if(node == null || (node.getLeft()==null && node.getRight() == null && node.getData()> num)) return -1;
+		
+		if(node.getData()<=num && (node.getLeft()!=null && node.getRight()==null || node.getLeft()!=null && node.getRight().getData() > num))
+			return node.getData();
+		
+		if(node.getData()>num)
+			return findLessOrEqualToN(node.getLeft(), num);
+		else
+			return findLessOrEqualToN(node.getRight(), num);		
+	}
+	
 	public static void main(String[] args) {
 		/*int []pre = {10,5,1,7,40,50};
 		
@@ -598,7 +705,7 @@ public class BinarySearchTree {
 		
 		System.out.println(bstRoot.getData());*/
 		
-		int lvl[] = {7, 4, 12, 3, 6, 8, 1, 5, 10};
+		/*int lvl[] = {7, 4, 12, 3, 6, 8, 1, 5, 10};
 		
 		Node lvlNode = buildBST4mLvlOdrTraversal(lvl);
 		System.out.println(lvlNode.getData());
@@ -609,13 +716,29 @@ public class BinarySearchTree {
 		
 		int kthSmall=kthSmallest(lvlNode, 4);
 		System.out.println(kthSmall);
+		System.out.println(kthLargest(lvlNode, 3));
 		
 		int pre[] = {8, 3, 5, 7, 6};
 		System.out.println(oneChildBST(pre, 5));
 		
 		int a[] = {2, 4, 1, 3};//{8, 3, 6, 1, 4, 7, 10, 14, 13};
 		int b[] = {2, 4, 3, 1};//{8, 10, 14, 3, 6, 4, 1, 7, 13};
-		System.out.println(isSameBSTUtil(a, b, b.length, 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE)?"BSTs are same":"BSTs not same");
+		System.out.println(isSameBSTUtil(a, b, b.length, 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE)?"BSTs are same":"BSTs not same");*/
+		
+		Node root = new Node(8);
+	    root = insert(root, 10);
+	    root = insert(root, 3);
+	    root = insert(root, 6);
+	    root = insert(root, 1);
+	    root = insert(root, 4);
+	    root = insert(root, 7);
+	    root = insert(root, 14);
+	    root = insert(root, 13);
+	    
+	    CIndex ci = new CIndex();
+	    int[] seq={4, 6, 8, 14};
+	    System.out.println(isSortedSeqExistUtil(root, seq, ci));
+	    System.out.println(ci.index==4);
 	}
 	
 }
