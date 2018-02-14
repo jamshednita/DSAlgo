@@ -44,6 +44,27 @@ public class RedBlackTreeMainApp {
 		
 	}
 	
+	private static void rotateRight(RedBlackNode root, RedBlackNode pt){
+		RedBlackNode pt_left=pt.getLeft();
+		pt.setLeft(pt_left.getRight());
+		
+		if(pt.getLeft()!=null)
+			pt.getLeft().setParent(pt);
+		
+		pt_left.setParent(pt.getParent());
+		
+		if(pt.getParent()==null)
+			root=pt_left;
+		else if(pt==pt.getParent().getRight())
+			pt.getParent().setRight(pt_left);
+		else
+			pt.getParent().setLeft(pt_left);
+		
+		pt_left.setRight(pt);
+		pt.setParent(pt_left);
+		
+	}
+	
 	private static void performBalancing(RedBlackNode root, RedBlackNode newNode){
 		if(newNode==root){
 			newNode.setColor(true); // TRUE=BLACK
