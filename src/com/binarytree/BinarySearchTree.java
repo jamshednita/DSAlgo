@@ -14,6 +14,9 @@ import java.util.Stack;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
+import com.l4e.node.Node;
+import com.l4e.utility.CIndex;
+
 public class BinarySearchTree {
 	
 	// A utility function to search a given key in BST
@@ -181,6 +184,36 @@ public class BinarySearchTree {
 			}
 			stk.push(newNode);	
 		}
+		
+		return root;
+	}
+	public static Node bst4mSLL(LinkedList<Integer> list){
+		return bst4mSLLUtil(list, new CIndex(), list.size());		
+	}
+
+	private static Node bst4mSLLUtil(LinkedList<Integer> list, CIndex head, int n){
+		
+		if(n <= 0){
+			return null;
+		}
+		
+		Node left = bst4mSLLUtil(list, head, n/2);
+		Node root = new Node(list.get(head.index++));
+		
+		root.setLeft(left);
+		root.setRight(bst4mSLLUtil(list, head, n-n/2-1));
+		return root;
+	}
+	
+	public static Node bst4mPre(int[] pre, CIndex curr, int min, int max){
+		if(pre.length<=curr.index || pre[curr.index]<min || pre[curr.index]>max){
+			return null;
+		}
+		
+		Node root= new Node(pre[curr.index++]);
+		
+		root.setLeft(bst4mPre(pre, curr, min, root.getData()));
+		root.setRight(bst4mPre(pre, curr, root.getData(), max));
 		
 		return root;
 	}
