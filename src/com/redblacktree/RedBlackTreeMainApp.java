@@ -23,6 +23,27 @@ public class RedBlackTreeMainApp {
 		
 	}
 	
+	private static void rotateLeft(RedBlackNode root, RedBlackNode pt){
+		RedBlackNode pt_right=pt.getRight();
+		pt.setRight(pt_right.getLeft());
+		
+		if(pt.getRight()!=null)
+			pt.getRight().setParent(pt);
+		
+		pt_right.setParent(pt.getParent());
+		
+		if(pt.getParent()==null)
+			root=pt_right;
+		else if(pt==pt.getParent().getLeft())
+			pt.getParent().setLeft(pt_right);
+		else
+			pt.getParent().setRight(pt_right);
+		
+		pt_right.setLeft(pt);
+		pt.setParent(pt_right);
+		
+	}
+	
 	private static void performBalancing(RedBlackNode root, RedBlackNode newNode){
 		if(newNode==root){
 			newNode.setColor(true); // TRUE=BLACK
@@ -44,7 +65,7 @@ public class RedBlackTreeMainApp {
 					// if uncle is also BLACK then Rotation Required.
 					
 					if(newNode==parent_nd.getRight()){
-						//rotateLeft(parent_nd, newNode);
+						//rotateLeft(root, parent_nd);
 					}
 					
 					//rotateRight(grandParent, parent_nd);
