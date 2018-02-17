@@ -14,9 +14,6 @@ import java.util.Stack;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
-import com.l4e.node.Node;
-import com.l4e.utility.CIndex;
-
 public class BinarySearchTree {
 	
 	// A utility function to search a given key in BST

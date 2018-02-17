@@ -2,9 +2,13 @@ package com.redblacktree;
 
 
 public class RedBlackTreeMainApp {
-	public static void insert(RedBlackNode root,int data){
+	public static RedBlackNode insert(RedBlackNode root,int data){
 		RedBlackNode newNode = new RedBlackNode(data);
 		root = bstInsert(root, newNode);
+		System.out.println("Inside insert before balancing "+root.getData()+" "+root.isColor());
+		root=performBalancing(root, newNode);
+		System.out.println("Inside insert after balancing "+root.getData()+" "+root.isColor());
+		return root;
 	}
 	private static RedBlackNode bstInsert(RedBlackNode root, RedBlackNode newNode){
 		if(root==null){
@@ -23,7 +27,7 @@ public class RedBlackTreeMainApp {
 		
 	}
 	
-	private static void rotateLeft(RedBlackNode root, RedBlackNode pt){
+	private static RedBlackNode rotateLeft(RedBlackNode root, RedBlackNode pt){
 		RedBlackNode pt_right=pt.getRight();
 		pt.setRight(pt_right.getLeft());
 		
@@ -42,9 +46,10 @@ public class RedBlackTreeMainApp {
 		pt_right.setLeft(pt);
 		pt.setParent(pt_right);
 		
+		return root;		
 	}
 	
-	private static void rotateRight(RedBlackNode root, RedBlackNode pt){
+	private static RedBlackNode rotateRight(RedBlackNode root, RedBlackNode pt){
 		RedBlackNode pt_left=pt.getLeft();
 		pt.setLeft(pt_left.getRight());
 		
@@ -63,15 +68,17 @@ public class RedBlackTreeMainApp {
 		pt_left.setRight(pt);
 		pt.setParent(pt_left);
 		
+		return root;		
 	}
 	
-	private static void performBalancing(RedBlackNode root, RedBlackNode newNode){
+	private static RedBlackNode performBalancing(RedBlackNode root, RedBlackNode newNode){
 		if(newNode==root){
-			newNode.setColor(true); // TRUE=BLACK
-			return;
+			root.setColor(true); // TRUE=BLACK
+			newNode.setColor(true);
+			
 		}
 		RedBlackNode parent_nd=newNode.getParent();
-		if(parent_nd.isColor()){
+		if(parent_nd != null && !parent_nd.isColor()){
 			RedBlackNode grandParent = newNode.getParent().getParent();
 			
 			if(parent_nd==grandParent.getLeft()){
@@ -81,21 +88,66 @@ public class RedBlackTreeMainApp {
 					parent_nd.setColor(true);
 					uncle.setColor(true);
 					grandParent.setColor(false);
-					performBalancing(root, grandParent);
+					return performBalancing(root, grandParent);
 				}else{
 					// if uncle is also BLACK then Rotation Required.
 					
 					if(newNode==parent_nd.getRight()){
-						//rotateLeft(root, parent_nd);
+						root = rotateLeft(root, parent_nd);
+						newNode = parent_nd;
+						parent_nd = newNode.getParent();
 					}
 					
-					//rotateRight(grandParent, parent_nd);
+					root = rotateRight(grandParent, parent_nd);
+					swapColor(parent_nd,grandParent);
+					newNode=parent_nd;
+					return performBalancing(root, newNode);
+				}
+			}else{
+				RedBlackNode uncle=grandParent.getLeft();
+				
+				if(parent_nd==grandParent.getRight()){
+					if(uncle!=null && !uncle.isColor()){
+						parent_nd.setColor(true);
+						uncle.setColor(true);
+						grandParent.setColor(false);
+						return performBalancing(root, grandParent);
+					}else{
+						if(newNode==parent_nd.getLeft()){
+							root = rotateRight(root, parent_nd);
+							newNode=parent_nd;
+							parent_nd=newNode.getParent();
+						}
+						
+						root = rotateLeft(root, grandParent);
+						swapColor(parent_nd, grandParent);
+						newNode=parent_nd;
+						
+						return performBalancing(root, newNode);
+					}
 				}
 			}
 		}
+		return root;
+	}
+	private static void swapColor(RedBlackNode parent_nd, RedBlackNode grand_parent) {
+		boolean tempColor=parent_nd.isColor();
+		parent_nd.setColor(grand_parent.isColor());
+	*	grand_parent.setColor(tempColor);
+		
 	}
 	public static void main(String[] args) {
 		
-	}
+		RedBlackNode root=new RedBlackNode(10);
+		root.setColor(true);
+		
+		root = insert(root, 20);
+		System.out.println(root.getData() + " " +root.isColor());
+		root = insert(root, 30);
+		System.out.println(root.getData() + " " +root.isColor());
+		root = insert(root, 40);
+		System.out.println(root.getData() + " " +root.isColor());
+		
+*-	}
 
 }
