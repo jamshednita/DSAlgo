@@ -133,7 +133,7 @@ public class RedBlackTreeMainApp {
 	private static void swapColor(RedBlackNode parent_nd, RedBlackNode grand_parent) {
 		boolean tempColor=parent_nd.isColor();
 		parent_nd.setColor(grand_parent.isColor());
-	*	grand_parent.setColor(tempColor);
+		grand_parent.setColor(tempColor);
 		
 	}
 	public static void main(String[] args) {
@@ -148,6 +148,6 @@ public class RedBlackTreeMainApp {
 		root = insert(root, 40);
 		System.out.println(root.getData() + " " +root.isColor());
 		
-*-	}
+	}
 
 }
