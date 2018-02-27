@@ -1,7 +1,7 @@
 package com.redblacktree;
 
 
-public class RedBlackTreeMainApp {
+public class RedBlackTreeG4G {
 	public static RedBlackNode insert(RedBlackNode root,int data){
 		RedBlackNode newNode = new RedBlackNode(data);
 		root = bstInsert(root, newNode);
