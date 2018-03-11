@@ -95,22 +95,197 @@ public class MiscBSTQ {
 			printbetweenk1k2(root.getRight(), k1, k2);
 		
 	}
+	/**
+	 * Description - A method to find out largest sorted sequence present in Binary Tree.
+	 * @param root
+	 * @return
+	 */
+	public static int largestSortedSeq(Node root){
+		CustIndex ci= new CustIndex(0, 0);
+		largestSortedSeqUtil(root,ci);
+		return ci.max>ci.index?ci.max:ci.index;
+	}
+	private static void largestSortedSeqUtil(Node root, CustIndex ci) {
+		if(root==null){
+			return;
+		}
+		largestSortedSeqUtil(root.getLeft(), ci);
+		
+		if(ci.ptr==null){
+			ci.ptr=root;
+			ci.index++;
+		}else if(ci.ptr.getData()>root.getData()){
+			ci.max=ci.max>ci.index?ci.max:ci.index;
+			ci.index=1;
+			ci.ptr=root;
+		}else{
+			ci.index++;
+			ci.ptr=root;
+		}
+		
+		largestSortedSeqUtil(root.getRight(), ci);
+	}
+	
+	/**
+	 * Description - Find the largest BST subtree in a given Binary Tree. O(n) Solution
+	 * 
+	 * @param root
+	 * @param ci
+	 * @return
+	 */
+	public static CustIndex largestSubBST(Node root, CustIndex ci){
+		if(root == null)
+			return ci;
+		
+		CustIndex lst = largestSubBST(root.getLeft(), new CustIndex(root.getData(), root.getData())); // Check if left subtree is BST
+		CustIndex rst = largestSubBST(root.getRight(), new CustIndex(root.getData(), root.getData())); // Check if right subtree is BST
+		if(lst.bst && rst.bst && lst.max<=root.getData() && rst.min>=root.getData()){ // left and right subtree both are BST and max of left should less than roo and min of right should greater than root.
+			ci.bst=true;
+			ci.index=lst.index+rst.index+1;
+			ci.max=rst.max;
+			ci.min=lst.min;
+		}else{
+			ci.bst=false;
+			ci.index=lst.index>rst.index?lst.index:rst.index;
+		}
+		
+		return ci;
+	}
+	
+	public static Node mergeTwoBalancedBST(Node root1, Node root2, int n){
+		// Step 1 - Create DLL for first tree (root1) in-place
+		// Step 2 - Create DLL for second tree (root2) in-place
+		// Step 3 - Merge these two sorted DLL
+		// Step 4 - Create Balanced BST from sorted DLL in step 3.
+		CIndex curr1=new CIndex();
+		createDDL4mBST(root1, curr1);
+		
+		CIndex curr2=new CIndex();
+		createDDL4mBST(root2, curr2);
+		
+		Node combinedDLLsn=mergeDLLs(curr1.ptr, curr2.ptr);
+		
+		CIndex curr=new CIndex();
+		curr.ptr=combinedDLLsn;
+		Node finalRoot = buildBST4mDLL(curr, n);
+		return finalRoot;
+	}
+	
+	private static void createDDL4mBST(Node root, CIndex curr){
+		if(root == null)
+			return;
+		createDDL4mBST(root.getRight(), curr);
+		if(curr.ptr == null){
+			curr.ptr=root;
+		}else{
+			curr.ptr.setLeft(root);
+			root.setRight(curr.ptr);
+			curr.ptr=root;
+		}
+		createDDL4mBST(root.getLeft(), curr);
+	}
+	private static Node mergeDLLs(Node root1, Node root2){
+		Node temp1=(root1.getData()>root2.getData()?root2:root1);	// Smaller Root
+		Node temp2=(root1.getData()<root2.getData()?root2:root1);	// Greater Root
+		Node ret=temp1;// Result start node reference
+		while(temp1!=null && temp1.getRight()!=null && temp2!=null){
+			Node temp1_next=temp1.getRight();
+			Node temp2_next=temp2.getRight();
+			
+			if(temp2.getData()<temp1_next.getData()){
+				temp1.setRight(temp2);
+				temp2.setLeft(temp1);
+				temp2.setRight(temp1_next);
+				temp1_next.setLeft(temp2);
+				
+				temp1=temp1_next.getLeft(); // temp1 should be next after modification
+				temp2=temp2_next;
+			}else{
+				temp1=temp1_next;
+			}
+		}
+		
+		if(temp2!=null){
+			temp1.setLeft(temp2);
+			temp2.setLeft(temp1);
+		}
+		return ret;
+	}
+	/**
+	 * This is similar to how to get BST from sorted array.
+	 * 
+	 * @param curr
+	 * @param n
+	 * @return
+	 */
+	private static Node buildBST4mDLL(CIndex curr, int n){
+		if(n<=0){
+			return null;
+		}
+		
+		Node left= buildBST4mDLL(curr, n/2);
+		
+		Node root=curr.ptr;
+		curr.ptr=curr.ptr.getRight();
+		
+		root.setLeft(left);
+		root.setRight(buildBST4mDLL(curr, n-n/2-1));
+		
+		return root;
+	}
 	public static void main(String[] args) {
-		Node root=new Node(20);
+		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
 		root.setRight(new Node(22));
 		root.getLeft().setLeft(new Node(4));
 		root.getLeft().setRight(new Node(12));
 		
-		/*System.out.println(getMinFromBST(root).getData());
+		System.out.println(getMinFromBST(root).getData());
 		
-		System.out.println("Total no of BST if n=3 : "+catalon(3));*/
+		System.out.println("Total no of BST if n=3 : "+catalon(3));
 		
-		/*int[] arr={4,2,5,1,3};
-		inorderFromLevelOrder(arr);*/
+		int[] arr={4,2,5,1,3};
+		inorderFromLevelOrder(arr);
 		
 		System.out.println(inorderSuccessor(root, root.getLeft().getRight()).getData());
-		printbetweenk1k2(root, 5, 21);
+		printbetweenk1k2(root, 5, 21);*/
+		
+		/*Node root = new Node(50);
+		root.left = new Node(10);
+		root.right = new Node(60);
+		root.left.left = new Node(5);
+		root.left.right = new Node(20);
+		root.right.left = new Node(55);
+		root.right.left.left = new Node(45);
+		root.right.right = new Node(70);
+		root.right.right.left = new Node(65);
+		root.right.right.right = new Node(80);
+		
+		System.out.println(largestSubBST(root, new CustIndex(root.getData(), root.getData())).index);*/
+		
+		Node root = new Node(100);
+		root.left = new Node(50);
+		root.right = new Node(300);
+		root.left.left = new Node(20);
+		root.left.right = new Node(70);
+
+		Node root1 = new Node(80);  
+		root1.left = new Node(40);
+		root1.right = new Node(120);
+
+		System.out.println(mergeTwoBalancedBST(root, root1, 8));
+	}
+
+}
+
+class CustIndex{
+	Node ptr=null;
+	int index=0,max=0,min=0;
+	boolean bst=true;
+	public CustIndex(int max, int min) {
+		super();
+		this.max = max;
+		this.min = min;
 	}
 
 }
