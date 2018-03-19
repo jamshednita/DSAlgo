@@ -779,7 +779,7 @@ public class BinarySearchTree {
  *
  */
 class CIndex{
-	Node ptr=null;
+	Node ptr=null, end=null;
 	int index=0;
 }
 class DetailNode{
