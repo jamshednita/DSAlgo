@@ -14,7 +14,7 @@ import java.util.Stack;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
-public class BinarySearchTree {
+public class BinarySearchTree_bckp {
 	
 	// A utility function to search a given key in BST
 	public static Node search(Node node, int key){
@@ -38,11 +38,7 @@ public class BinarySearchTree {
 			node = new Node(key);
 			return node;
 		}
-		// This code block handles duplicates
-		if(node.getData() == key){
-			node.count++;
-			return node;
-		}
+		
 		 /* Otherwise, recur down the tree */
 		if(node.getData() > key){
 			node.setLeft(insert(node.getLeft(), key));
@@ -72,17 +68,13 @@ public class BinarySearchTree {
     	}else if(node.getData() < key){
     		node.setRight(deleteRec(node.getRight(), key));
     	}else{
-    		// This code handles duplicates.
-    		if(node.count > 1){
-    			node.count--;
-    			return node;
-    		}
     		if(node.getLeft() == null)
     			return node.getRight();
     		else if(node.getRight() == null)
     			return node.getLeft();
 
     		node.setData(findInOrderSuccessor(node.getRight()));
+    		
     		node.setRight(deleteRec(node.getRight(), node.getData()));
     	}
     	
@@ -189,6 +181,36 @@ public class BinarySearchTree {
 			}
 			stk.push(newNode);	
 		}
+		
+		return root;
+	}
+	public static Node bst4mSLL(LinkedList<Integer> list){
+		return bst4mSLLUtil(list, new CIndex(), list.size());		
+	}
+
+	private static Node bst4mSLLUtil(LinkedList<Integer> list, CIndex head, int n){
+		
+		if(n <= 0){
+			return null;
+		}
+		
+		Node left = bst4mSLLUtil(list, head, n/2);
+		Node root = new Node(list.get(head.index++));
+		
+		root.setLeft(left);
+		root.setRight(bst4mSLLUtil(list, head, n-n/2-1));
+		return root;
+	}
+	
+	public static Node bst4mPre(int[] pre, CIndex curr, int min, int max){
+		if(pre.length<=curr.index || pre[curr.index]<min || pre[curr.index]>max){
+			return null;
+		}
+		
+		Node root= new Node(pre[curr.index++]);
+		
+		root.setLeft(bst4mPre(pre, curr, min, root.getData()));
+		root.setRight(bst4mPre(pre, curr, root.getData(), max));
 		
 		return root;
 	}
@@ -564,7 +586,7 @@ public class BinarySearchTree {
 	   /* Return false if any of the following is true
 	      a) If the parent element is leaf in one array, but non-leaf in other.
 	      b) The elements satisfying constraints are not same. We either search
-	         for left child or right child of the parent element (decided by min
+	         for left child or right child of the parent element (decinded by min
 	         and max values). The child found must be same in both arrays */
 	   if (((j==n)^(k==n)) || a[j]!=b[k])
 	       return false;
@@ -575,8 +597,9 @@ public class BinarySearchTree {
 	   return isSameBSTUtil(a, b, n, j+1, k+1, a[j], max) &&  // Right Subtree
 	          isSameBSTUtil(a, b, n, j+1, k+1, min, a[j]);    // Left Subtree
 	}
+	
 	/**
-	 * Description - K’th Largest Element in BST when modification to BST is not allowed. O(h+k)
+	 * Description - Kâ€™th Largest Element in BST when modification to BST is not allowed. O(h+k)
 	 * 
 	 * @param root - BST's root node.
 	 * @param k - k'th largest indicator.
@@ -681,6 +704,7 @@ public class BinarySearchTree {
 		else
 			return findLessOrEqualToN(node.getRight(), num);		
 	}
+	
 	public static void main(String[] args) {
 		/*int []pre = {10,5,1,7,40,50};
 		

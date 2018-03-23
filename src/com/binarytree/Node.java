@@ -4,6 +4,7 @@ public class Node {
 
 	int data;
 	Node left,right;
+	int count; // To handle duplicates
 	
 	public Node(int data) {
 		super();
@@ -26,5 +27,11 @@ public class Node {
 	}
 	public void setRight(Node right) {
 		this.right = right;
+	}
+	public int getCount() {
+		return count;
+	}
+	public void setCount(int count) {
+		this.count = count;
 	}
 }
