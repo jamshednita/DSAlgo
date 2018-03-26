@@ -239,6 +239,166 @@ public class RedBlackTreeMainApp {
 		
 		return res;
 	}
+	
+	public static RedBlackNode rbDelete(RedBlackNode root, int del, CustIndex curr) {
+		if(root == null)
+			return null;
+		
+		if(root.getData() == del) {
+			// If node to be deleted has one not-null child.
+			if(root.getLeft() == null || root.getRight() == null) {
+				return rbDeleteUtil(root, curr);
+			}else {
+				int inOrderSucc=inSuccessor(root.getRight()).getData();
+				root.setData(inOrderSucc);
+				
+				root.setRight(rbDelete(root.getRight(), inOrderSucc, curr));
+			}
+			
+		}else if(root.getData()>del){
+			root.setLeft(rbDelete(root.getLeft(), del, curr));
+		}else {
+			root.setRight(rbDelete(root.getRight(), del, curr));
+		}
+		
+		return root;
+	}
+	/*private static int findSamllest(RedBlackNode node) {
+		
+		while(node.getLeft()!=null) {
+			node=node.getLeft();
+		}
+		return node==null?0:node.getData();
+	}*/
+	private static RedBlackNode rbDeleteUtil(RedBlackNode nodeToBeDeleted, CustIndex curr) {
+		RedBlackNode child = nodeToBeDeleted.getLeft() == null ? nodeToBeDeleted.getRight() : nodeToBeDeleted.getLeft();
+		
+		// This replaces nodeToBeDeleted with child node.
+		if(nodeToBeDeleted.getParent() == null) {
+			curr.ptr = child;
+		}else {
+			
+			if(isLeftChild(nodeToBeDeleted)) {
+				nodeToBeDeleted.getParent().setLeft(child);
+			}else {
+				nodeToBeDeleted.getParent().setRight(child);
+			}
+			
+			if(child!=null) {
+				child.setParent(nodeToBeDeleted.getParent());
+			}
+		}
+		
+		// If either of nodeToBeDeleted or child is red then color child as Black and DONE
+		if(!nodeToBeDeleted.isColor() || (child!=null && !child.isColor())) {
+			if(child!=null) {
+				child.setColor(true);
+			}
+		}else { // Otherwise double-black situation and will got to 6-cases.
+			rbDeleteCase1(child, nodeToBeDeleted.getParent(), curr);
+		}
+		
+		return child;
+	}
+	
+	private static void rbDeleteCase1(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
+		if(doubleBlackNode.getParent()==null) {
+			curr.ptr=doubleBlackNode;
+			return;
+		}
+		
+		rbDeleteCase2(doubleBlackNode, doubleBlackParent, curr);
+	}
+	private static void rbDeleteCase2(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
+		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
+		
+		if(sibling.isColor()) {
+			if(isRightChild(sibling)) {
+				curr.ptr=rotateRight(curr.ptr, doubleBlackParent);
+			}else {
+				curr.ptr=rotateLeft(curr.ptr, doubleBlackParent);
+			}
+			
+			swapColor(doubleBlackParent, sibling);
+		}
+		rbDeleteCase3(doubleBlackNode, doubleBlackParent, curr);
+	}
+	private static void rbDeleteCase3(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
+		RedBlackNode sibling=getSibling(doubleBlackNode, doubleBlackParent);
+		
+		if(doubleBlackParent.isColor() && sibling.isColor() && (sibling.getLeft()==null || !sibling.getLeft().isColor()) && (sibling.getRight() == null || !sibling.getRight().isColor())) {
+			sibling.setColor(false);
+			
+			rbDeleteCase1(doubleBlackParent, doubleBlackParent.getParent(), curr);
+		}else {
+			rbDeleteCase4(doubleBlackNode, doubleBlackParent, curr);
+		}
+		
+	}
+	private static void rbDeleteCase4(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
+		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
+		
+		if(doubleBlackParent.isColor() && !sibling.isColor() && (sibling.getLeft()==null || !sibling.getLeft().isColor()) && (sibling.getRight()==null || !sibling.getRight().isColor())) {
+			swapColor(doubleBlackParent, sibling);
+			return;
+		}else {
+			rbDeleteCase5(doubleBlackNode, doubleBlackParent, curr);
+		}
+		
+	}
+	private static void rbDeleteCase5(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
+		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
+		
+		if(!doubleBlackParent.isColor() && !sibling.isColor()) {
+			if(isRightChild(sibling) && (sibling.getLeft()!=null && sibling.getLeft().isColor()) && (sibling.getRight() == null || !sibling.getRight().isColor())) {
+				curr.ptr = rotateRight(curr.ptr, sibling);
+			}else if(isLeftChild(sibling) && (sibling.getRight() != null && sibling.getRight().isColor()) && (sibling.getLeft() == null || !sibling.getLeft().isColor())) {
+				curr.ptr = rotateLeft(curr.ptr, sibling);
+			}
+		}
+		
+		rbDeleteCase6(doubleBlackNode, doubleBlackParent, curr);
+	}
+	private static void rbDeleteCase6(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
+		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
+		
+		if(isRightChild(sibling) && !sibling.isColor() && (sibling.getRight() != null && sibling.getRight().isColor())) {
+			curr.ptr = rotateLeft(curr.ptr, doubleBlackParent);
+			
+			sibling.getRight().setColor(true);
+		}else if (isLeftChild(sibling) && !sibling.isColor() && (sibling.getLeft() != null && sibling.getLeft().isColor())){
+			curr.ptr = rotateRight(curr.ptr, doubleBlackParent);
+			sibling.getLeft().setColor(true);
+		}
+		
+		swapColor(doubleBlackParent, sibling);
+	}
+	private static RedBlackNode getSibling(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent) {
+
+		if(doubleBlackNode==doubleBlackParent.getLeft()) {
+			return doubleBlackParent.getRight();
+		}else
+			return doubleBlackParent.getLeft();
+	}
+	private static boolean isLeftChild(RedBlackNode node) {
+		RedBlackNode prnt = node.getParent();
+		
+		if(node == prnt.getLeft())
+			return true;
+		else {
+			return false;
+		}
+	}
+	
+	private static boolean isRightChild(RedBlackNode node) {
+		RedBlackNode prnt = node.getParent();
+		
+		if(node == prnt.getRight())
+			return true;
+		else {
+			return false;
+		}
+	}
 	public static void main(String[] args) {
 		
 		/*RedBlackNode root = insert(null, 10);//null;
@@ -268,4 +428,7 @@ public class RedBlackTreeMainApp {
 		System.out.println(root.getData()+" : "+root.isColor());
 	}
 
+}
+class CustIndex{
+	RedBlackNode ptr=null;
 }
