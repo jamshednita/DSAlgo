@@ -10,8 +10,9 @@ public class ITreeApp {
 			root.setLeft(insert(root.getLeft(), i));
 		}else
 			root.setRight(insert(root.getRight(), i));
-		if(root.max<i.high)
-			root.max=i.high;
+		
+		/*if(root.max<i.high)
+			root.max=i.high;*/
 		
 		return root;
 	}
@@ -36,25 +37,29 @@ public class ITreeApp {
 		if(doOverlap(root, interval))
 			return root;
 		
-		if(root.getLeft()!=null && root.max < interval.low)
+		/*if(root.getLeft()!=null && root.getLeft().max >= interval.low)
+			return searchOverlap(root.getLeft(), interval);*/
+		if(root.i.low >= interval.low)
 			return searchOverlap(root.getLeft(), interval);
-		
 		else
 			return searchOverlap(root.getRight(), interval);
 	}
 
 	private static boolean doOverlap(INode root, Interval interval) {
-		if(root == null)
-			return false;
+		/* root is never gonna null.
+		 * if(root == null)
+			return false;*/
 		
-		if(root.i.high>interval.low && interval.high>root.i.low)
+		if(interval.low < root.i.high && interval.high > root.i.low)
 			return true;
 		
 		return false;
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Interval[] appts = {new Interval(1, 5), new Interval(3, 7), new Interval(2, 6), new Interval(10, 15), new Interval(5, 6), new Interval(4, 100)};
+		
+		printConflictingAppointments(appts, appts.length);
 
 	}
 

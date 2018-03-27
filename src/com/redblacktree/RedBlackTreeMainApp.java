@@ -240,6 +240,14 @@ public class RedBlackTreeMainApp {
 		return res;
 	}
 	
+	/**
+	 * Description - A recursive method to delete a node in red-black tree.
+	 * 
+	 * @param root - Root node of red-black tree
+	 * @param del - Key of the node to be deleted.
+	 * @param curr - Custom class ref to hold the reference of root node of tree.
+	 * @return - Root of modified red-black tree.
+	 */
 	public static RedBlackNode rbDelete(RedBlackNode root, int del, CustIndex curr) {
 		if(root == null)
 			return null;
@@ -253,12 +261,20 @@ public class RedBlackTreeMainApp {
 				root.setData(inOrderSucc);
 				
 				root.setRight(rbDelete(root.getRight(), inOrderSucc, curr));
+				if(root.getRight()!=null)
+					root.getRight().setParent(root);
 			}
 			
 		}else if(root.getData()>del){
 			root.setLeft(rbDelete(root.getLeft(), del, curr));
+			
+			if(root.getLeft()!=null)
+				root.getLeft().setParent(root);
 		}else {
 			root.setRight(rbDelete(root.getRight(), del, curr));
+			
+			if(root.getRight()!=null)
+				root.getRight().setParent(root);
 		}
 		
 		return root;
@@ -300,29 +316,41 @@ public class RedBlackTreeMainApp {
 		
 		return child;
 	}
-	
+	/*
+	 * If doubleBlackParent is null then make it root of modified red black tree and DONE.
+	 */
 	private static void rbDeleteCase1(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
-		if(doubleBlackNode.getParent()==null) {
+		if(doubleBlackParent==null) {
 			curr.ptr=doubleBlackNode;
 			return;
 		}
 		
 		rbDeleteCase2(doubleBlackNode, doubleBlackParent, curr);
 	}
+	/*
+	 * If sibling is RED(false), parent of doubleBlack node is BLACK(true) and both sibling's children are BLACK(true)
+	 * Then do left-rotation at doubleBlackParent if sibling is right child else left-rotation.
+	 * Also swap color of doubleBlackParent and sibling.
+	 */
 	private static void rbDeleteCase2(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
 		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
 		
-		if(sibling.isColor()) {
+		if(!sibling.isColor()) {
 			if(isRightChild(sibling)) {
-				curr.ptr=rotateRight(curr.ptr, doubleBlackParent);
-			}else {
 				curr.ptr=rotateLeft(curr.ptr, doubleBlackParent);
+			}else {
+				curr.ptr=rotateRight(curr.ptr, doubleBlackParent);
 			}
 			
 			swapColor(doubleBlackParent, sibling);
 		}
 		rbDeleteCase3(doubleBlackNode, doubleBlackParent, curr);
 	}
+	/*
+	 * If sibling is BLACK(true), parent of doubleBlack node is BLACK(true) and both sibling's children are BLACK(true)
+	 * Then Make parent as double-black, change sibling color to RED(false)
+	 * Now start checking from case 1 for new double black node.
+	 */
 	private static void rbDeleteCase3(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
 		RedBlackNode sibling=getSibling(doubleBlackNode, doubleBlackParent);
 		
@@ -335,10 +363,15 @@ public class RedBlackTreeMainApp {
 		}
 		
 	}
+	/*
+	 * If sibling is BLACK(true), parent of doubleBlack node is RED(false) and both sibling's children are BLACK(true)
+	 * Then swap the color of sibling and doubleBlackParent and DONE.
+	 * Else check for case 5.
+	 */
 	private static void rbDeleteCase4(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
 		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
 		
-		if(doubleBlackParent.isColor() && !sibling.isColor() && (sibling.getLeft()==null || !sibling.getLeft().isColor()) && (sibling.getRight()==null || !sibling.getRight().isColor())) {
+		if(!doubleBlackParent.isColor() && sibling.isColor() && (sibling.getLeft()==null || sibling.getLeft().isColor()) && (sibling.getRight()==null || sibling.getRight().isColor())) {
 			swapColor(doubleBlackParent, sibling);
 			return;
 		}else {
@@ -346,27 +379,41 @@ public class RedBlackTreeMainApp {
 		}
 		
 	}
+	/*
+	 * If sibling is BLACK(true), parent of doubleBlack node is BLACK(true) and one of sibling's children is RED(false)
+	 * Then do right rotation at sibling if left child of sibling is RED(false) else left rotation at sibling if right child of sibling is RED(false)
+	 * Swap the color of sibling and it's RED(false) child.
+	 */
 	private static void rbDeleteCase5(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
 		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
 		
-		if(!doubleBlackParent.isColor() && !sibling.isColor()) {
-			if(isRightChild(sibling) && (sibling.getLeft()!=null && sibling.getLeft().isColor()) && (sibling.getRight() == null || !sibling.getRight().isColor())) {
+		if(doubleBlackParent.isColor() && sibling.isColor()) {
+			if(isRightChild(sibling) && (sibling.getLeft()!=null && !sibling.getLeft().isColor()) && (sibling.getRight() == null || sibling.getRight().isColor())) {
+				// Sibling is Right child of it's parent and left child of sibling is RED(false) and right child of sibling is BLACK(true)
 				curr.ptr = rotateRight(curr.ptr, sibling);
-			}else if(isLeftChild(sibling) && (sibling.getRight() != null && sibling.getRight().isColor()) && (sibling.getLeft() == null || !sibling.getLeft().isColor())) {
+			}else if(isLeftChild(sibling) && (sibling.getRight() != null && !sibling.getRight().isColor()) && (sibling.getLeft() == null || sibling.getLeft().isColor())) {
+				// Sibling is left child of it's parent and right child of sibling is RED(false) and left child of sibling is BLACK(true)
 				curr.ptr = rotateLeft(curr.ptr, sibling);
 			}
 		}
 		
 		rbDeleteCase6(doubleBlackNode, doubleBlackParent, curr);
 	}
+	/*
+	 *  If sibling is BLACK(true) and at-least one of sibling's children is RED(false)
+	 *  Then do left rotation at doubleBlackParent if sibling is right child and right child of sibling is RED(false)
+	 *  Else do right rotation at doubleBlackParent if sibling is left child and left child of sibling is RED(false)
+	 *  
+	 *  Swap the color of doubleBlackParent and sibling and DONE.
+	 */
 	private static void rbDeleteCase6(RedBlackNode doubleBlackNode, RedBlackNode doubleBlackParent, CustIndex curr) {
 		RedBlackNode sibling = getSibling(doubleBlackNode, doubleBlackParent);
 		
-		if(isRightChild(sibling) && !sibling.isColor() && (sibling.getRight() != null && sibling.getRight().isColor())) {
+		if(isRightChild(sibling) && sibling.isColor() && (sibling.getRight() != null && sibling.getRight().isColor())) {
 			curr.ptr = rotateLeft(curr.ptr, doubleBlackParent);
 			
 			sibling.getRight().setColor(true);
-		}else if (isLeftChild(sibling) && !sibling.isColor() && (sibling.getLeft() != null && sibling.getLeft().isColor())){
+		}else if (isLeftChild(sibling) && sibling.isColor() && (sibling.getLeft() != null && sibling.getLeft().isColor())){
 			curr.ptr = rotateRight(curr.ptr, doubleBlackParent);
 			sibling.getLeft().setColor(true);
 		}
@@ -413,7 +460,7 @@ public class RedBlackTreeMainApp {
 		root = insert(root, 60);
 		System.out.println(root.getData()+" : "+root.isColor());*/
 		
-		RedBlackNode root = insert(null, 60);//null;
+		/*RedBlackNode root = insert(null, 60);//null;
 		root = insert(root, 50);
 		System.out.println(root.getData()+" : "+root.isColor());
 		root = insert(root, 40);
@@ -425,7 +472,25 @@ public class RedBlackTreeMainApp {
 		root = insert(root, 10);
 		System.out.println(root.getData()+" : "+root.isColor());
 		root = insert(root, 5);
-		System.out.println(root.getData()+" : "+root.isColor());
+		System.out.println(root.getData()+" : "+root.isColor());*/
+		
+		// Delete test cases - 
+		
+		RedBlackNode root = insert(null, 10);
+		root = insert(root, -10);
+		root = insert(root, 30);
+		root = insert(root, 20);
+		root = insert(root, 38);
+		root = insert(root, 15);
+		
+		CustIndex curr = new CustIndex();
+		curr.ptr=root;
+		root=rbDelete(root, 15, curr);
+		System.out.println("After deleting 15 : "+root.getData());
+		
+		root=rbDelete(root, 10, curr);
+		System.out.println("After deleting 10 : "+root.getData());
+
 	}
 
 }

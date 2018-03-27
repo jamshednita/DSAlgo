@@ -117,7 +117,8 @@ public class MiscBSTQ {
 			ci.ptr=root;
 			ci.index++;
 		}else if(ci.ptr.getData()>root.getData()){
-			ci.max=ci.max>ci.index?ci.max:ci.index;
+			ci.max=ci.max>ci.index?ci.max:ci.index;// Max variable is to store previous largestSorted sequence. 
+			
 			ci.index=1;
 			ci.ptr=root;
 		}else{
@@ -415,6 +416,12 @@ public class MiscBSTQ {
 	public static void findPair4SumK(Node root, int k){
 		Stack<Node> stkOne = new Stack<Node>();
 		Stack<Node> stkTwo = new Stack<Node>();
+		/*
+		 * Idea is to traverse tree in ascending and descending order at the same time using two stacks and check
+		 * if sum of both element is equal to desired sum k then stop doing traversal.
+		 * Else if sum<k then find ascending stack top element and recheck
+		 * else sum>k then find descending stack top element and recheck
+		 */
 		
 		boolean first=false, second=false;
 		Node inOrder=root, revInOrder=root;
@@ -483,22 +490,95 @@ public class MiscBSTQ {
 	 * @param max - max value of the range.
 	 * @return
 	 */
-	public static Node inRange(Node root, int min, int max){
+	public static Node removeOutOfRange(Node root, int min, int max){
 		if(root==null)
 			return null;
 		
-		root.setLeft(root.getData()==min?null:inRange(root.getLeft(), min, max));
-		root.setRight(root.getData()==max?null:inRange(root.getRight(), min, max));
+		root.setLeft(root.getData()==min?null:removeOutOfRange(root.getLeft(), min, max));
+		root.setRight(root.getData()==max?null:removeOutOfRange(root.getRight(), min, max));
 		
 		if(root.getData()<min){
 			return root.getRight();
 		}else if(root.getData()>max){
 			return root.getLeft();
-		}/*else{
-			root.setLeft(root.getData()==min?null:inRange(root.getLeft(), min, max));
-			root.setRight(root.getData()==max?null:inRange(root.getRight(), min, max));
-		}*/
+		}
 		return root;
+	}
+	/**
+	 * Description - Design a data structure to do reservations of future jobs on a single machine under following constraints.
+				     1) Every job requires exactly k time units of the machine.
+					 2) The machine can do only one job at a time. 
+					 3) Time is part of the system. Future Jobs keep coming at different times. Reservation of a future job is done only if there is no existing reservation within k time frame (after and before)
+					 4) Whenever a job finishes (or its reservation time plus k becomes equal to current time), it is removed from system.
+	 * @param root - Root of reservation BST
+	 * @param time - New reservation time.
+	 * @param k    - Reservation time.
+	 * @return     - Root of modified reservation tree.
+	 */
+	public static Node reserveJobAt(Node root, int time, int k){
+		if(root==null)
+			return new Node(time);
+		
+		if(root.getData() < time+k && root.getData()+k > time){
+			return root; // Reservation cannot be done at time, slot already reserved.
+		}else if(time>root.getData())
+			root.setRight(reserveJobAt(root.getRight(), time, k));
+		else{
+			root.setLeft(reserveJobAt(root.getLeft(), time, k));
+		}
+		
+		return root;
+	}
+	/**
+	 * Description - Finds no of nodes in BST that is in the range of [low, high]. Time Complexity = O(h+k) approx. Less than O(n) for sure.
+	 * 
+	 * @param root - root of BST.
+	 * @param low - lowest range value.
+	 * @param high - highest range value.
+	 * @return - No of elements in range.
+	 */
+	public static int nodesInRange(Node root, int low, int high){
+		if(root==null){
+			return 0;
+		}
+		// if root's data is inRange then it's both left and right sub tree may have node/s in range. 
+		if(root.getData()>=low && root.getData()<=high){
+			return 1+nodesInRange(root.getLeft(), low, high)+nodesInRange(root.getRight(), low, high);
+		}else if(root.getData()<low) // if root's data is less than low then left sub-tree is out of range for sure but right sub-tree may have node/s in range.
+			return nodesInRange(root.getRight(), low, high);
+		else  // if root's data is greater than high then right sub-tree is out of range for sure but left sub-tree may have node/s in range.
+			return nodesInRange(root.getLeft(), low, high);
+	}
+	/**
+	 * Description - O(h+k), Given a Binary Search Tree (BST) of integer values and a range [low, high], return count of nodes where all the nodes under that node (or subtree rooted with that node) lie in the given range.
+	 * 
+	 * @param root - Root of BST.
+	 * @param low - lowest range value.
+	 * @param high - highest range value.
+	 * @return - Count of subBST.
+	 */
+	public static boolean subBSTsInRange(Node root, int low, int high, CustIndex ci){
+		if(root==null)
+			return true;
+		
+		//If root's data is greater than high then the sub tree we are looking for is lying in left sub-tree.
+		if(root.getData() > high){
+			//Return true iff sub-tree under this root is subtree in range and also this root's data falls in range
+			return subBSTsInRange(root.getLeft(), low, high, ci) && root.getData() >= low && root.getData() <= high ? true : false;
+		}else if(root.getData() < low){ //If root's data is lesser than low then the sub tree we are looking for is lying in left sub-tree.
+			//Return true iff sub-tree under this root is subtree in range and also this root's data falls in range. If we skip to check the range this count will be incorrect since it starts counting the root also if root is in range.
+			return subBSTsInRange(root.getRight(), low, high, ci) && root.getData() >= low && root.getData() <= high? true : false;
+		}else{
+			boolean lCount = subBSTsInRange(root.getLeft(), low, high, ci);
+			boolean rCount = subBSTsInRange(root.getRight(), low, high, ci);
+
+			if (lCount && rCount && root.getData() >= low && root.getData() <= high) {
+				ci.index++;
+				return true;
+			} else{
+				return false;
+			}
+		}
 	}
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
@@ -591,15 +671,50 @@ public class MiscBSTQ {
 		
 		//printTripletOfZero(root);
 		//findPair4SumK(root, -21);
-		Node rangeRoot=inRange(root, -10, 8);
-		System.out.println(rangeRoot.getData());
-		System.out.println("This is prosper branch");
+		//Node rangeRoot=removeOutOfRange(root, -10, 8);
+		//System.out.println(rangeRoot.getData());
+		
+		System.out.println(nodesInRange(root, -13, 7));
+		System.out.println(nodesInRange(root, -11, 7));
+		System.out.println(nodesInRange(root, -11, 8));
+		System.out.println(nodesInRange(root, -1, 5));
+		System.out.println(nodesInRange(root, -1, 6));
+		System.out.println(nodesInRange(root, 7, 14));
+		
+		Node jobResRoot=reserveJobAt(null, 15, 4);
+		jobResRoot=reserveJobAt(jobResRoot, 7, 4);
+		jobResRoot=reserveJobAt(jobResRoot, 20, 4);
+		jobResRoot=reserveJobAt(jobResRoot, 3, 4);
+		
+		jobResRoot=reserveJobAt(jobResRoot, 30, 4);
+		jobResRoot=reserveJobAt(jobResRoot, 17, 4);
+		jobResRoot=reserveJobAt(jobResRoot, 35, 4);
+		jobResRoot=reserveJobAt(jobResRoot, 45, 4);
+		
+		System.out.println(jobResRoot.getData());
+		
+		CustIndex ci=new CustIndex(0, 0);
+		subBSTsInRange(root, -13, 7, ci);
+		System.out.println(ci.index);
+		ci=new CustIndex(0, 0);
+		subBSTsInRange(root, -11, 7, ci);
+		System.out.println(ci.index);
+		System.out.println(ci.index);
+		ci=new CustIndex(0, 0);
+		subBSTsInRange(root, -1, 5, ci);
+		System.out.println(ci.index);
+		ci=new CustIndex(0, 0);
+		subBSTsInRange(root, -1, 6, ci);
+		System.out.println(ci.index);
+		ci=new CustIndex(0, 0);
+		subBSTsInRange(root, 7, 14, ci);
+		System.out.println(ci.index);
 	}
 
 }
 
 class CustIndex{
-	Node ptr=null;
+	Node ptr=null, end=null;
 	int index=0,max=0,min=0;
 	boolean bst=true;
 	public CustIndex(int max, int min) {
@@ -607,5 +722,4 @@ class CustIndex{
 		this.max = max;
 		this.min = min;
 	}
-
 }
