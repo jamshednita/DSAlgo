@@ -428,44 +428,41 @@ public class MiscBSTQ {
 		int leftVal=0, rightVal=0;
 		while(true){
 			
-			while(!first){
+			if(!first){
 				while(inOrder!=null){
 					stkOne.push(inOrder);
 					inOrder=inOrder.getLeft();
 				}
-				if(stkOne.isEmpty())
-					first=true;
-				else{
+				if(!stkOne.isEmpty()){
 					Node leftTemp=stkOne.pop();
 					leftVal=leftTemp.getData();
 					inOrder=leftTemp.getRight();
-					first=true;
 				}
+				first=true;
 			}
 			
-			while(!second){
+			if(!second){
 				while(revInOrder!=null){
 					stkTwo.push(revInOrder);
 					revInOrder=revInOrder.getRight();
 				}
 				
-				if(stkTwo.isEmpty())
-					second=true;
-				else{
+				if(!stkTwo.isEmpty()){
 					Node rightTemp=stkTwo.pop();
 					rightVal=rightTemp.getData();
 					revInOrder=rightTemp.getLeft();
-					second=true;
+					
 				}
+				second=true;
 			}
 			
 			if(leftVal+rightVal == k){
 				System.out.println(leftVal+" : "+rightVal);
 				return;
 			}else if(leftVal+rightVal > k){
-				second=false;
+				second=false; // Find the next element from revInorder stack
 			}else{
-				first=false;
+				first=false; // Find the next element from inorder stack
 			}
 			
 			if(leftVal >= rightVal){
@@ -580,6 +577,84 @@ public class MiscBSTQ {
 			}
 		}
 	}
+	/**
+	 * Description - The function should change old key value to new key value. The function may assume that old key value always exists in Binary Search Tree.
+	 * 
+	 * @param root - BST root node
+	 * @param oldKey - Key to be replaced
+	 * @param newKey - Replacing key
+	 */
+	public static void changeKey(Node root, int oldKey, int newKey){
+		// To replace oldKey with newKey we can delete first oldKey and then insert newKey in BST. Wer cann't directly replace oldKey with newKwy since this might disturb the BST property.
+		
+		root = BinarySearchTree.deleteRec(root, oldKey);
+		
+		root = BinarySearchTree.insert(root, newKey);
+	}
+	/**
+	 * Description - Print common of two BST in linear time complexity and with limited space complexity O(h1+h2).
+	 * 
+	 * @param root1
+	 * @param root2
+	 */
+	public static void printCommonInTwoBst(Node root1, Node root2){
+		if(root1==null || root2==null){
+			System.err.println("Nothing Common !!");
+			return;
+		}
+		boolean first=true, second=true;
+		int val1=0, val2=0;
+		
+		Stack<Node> stkOne = new Stack<Node>(); // Stack one for first tree in-order traversal
+		Stack<Node> stkTwo = new Stack<Node>(); // Stack one for first tree in-order traversal
+		
+		//Run the loop until either of tree in-order traversal is done.
+		while((!stkOne.isEmpty() || root1!=null) && (!stkTwo.isEmpty() || root2!=null)){
+			// Find next in-order element from first tree
+			if(first){
+				while(root1!=null){
+					stkOne.push(root1);
+					root1=root1.getLeft();
+				}
+				// Get the top element from stack1 and point root1 to top's right so that we can find next in-order element.
+				if(!stkOne.isEmpty()){
+					val1 = stkOne.peek().getData();
+					root1 = stkOne.pop().getRight();
+				}
+				
+				first = false;
+			}
+			
+			// Find next in-order element from second tree 
+			if(second){
+				while(root2!=null){
+					stkTwo.push(root2);
+					root2=root2.getLeft();
+				}
+				// Get the top element from stack2 and point root2 to top's right so that we can find next in-order element. 
+				if(!stkTwo.isEmpty()){
+					val2 = stkTwo.peek().getData();
+					root2 = stkTwo.pop().getRight();
+				}
+				
+				second = false;
+			}
+		
+			if(val1==val2){
+				// Both element are same then print and find next in-order element from both tree by setting first and second boolean variable to check next for equality.
+				System.out.print(val1 + " ");
+				first=true;
+				second=true;
+			}else if(val1>val2){
+				// find next in-order element from tree2 since it is less than current in-order element of tree1.
+				second = true;
+			}else{
+				// find next in-order element from tree1 since it is less than current in-order element of tree2.
+				first = true;
+			}
+			
+		}
+	}
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
@@ -615,11 +690,9 @@ public class MiscBSTQ {
 		root.right = new Node(300);
 		root.left.left = new Node(20);
 		root.left.right = new Node(70);
-
 		Node root1 = new Node(80);  
 		root1.left = new Node(40);
 		root1.right = new Node(120);
-
 		//System.out.println(mergeTwoBalancedBST(root, root1, 8));
 		
 		Node iRoot = new Node(100);
@@ -627,7 +700,6 @@ public class MiscBSTQ {
 		iRoot.right = new Node(300);
 		iRoot.left.left = new Node(50); //new Node(20);
 		iRoot.left.right = new Node(70);
-
 		correctBST(iRoot);
 		
 		System.out.println(iRoot.getData());*/
@@ -652,7 +724,6 @@ public class MiscBSTQ {
 		root.right = new Node(300);
 		root.left.left = new Node(20);
 		root.left.right = new Node(70);
-
 		Node root1 = new Node(80);  
 		root1.left = new Node(40);
 		root1.right = new Node(120);
@@ -670,11 +741,11 @@ public class MiscBSTQ {
 		root.right.left.left=new Node(7);
 		
 		//printTripletOfZero(root);
-		//findPair4SumK(root, -21);
+		findPair4SumK(root, 20);
 		//Node rangeRoot=removeOutOfRange(root, -10, 8);
 		//System.out.println(rangeRoot.getData());
 		
-		System.out.println(nodesInRange(root, -13, 7));
+		/*System.out.println(nodesInRange(root, -13, 7));
 		System.out.println(nodesInRange(root, -11, 7));
 		System.out.println(nodesInRange(root, -11, 8));
 		System.out.println(nodesInRange(root, -1, 5));
@@ -708,7 +779,23 @@ public class MiscBSTQ {
 		System.out.println(ci.index);
 		ci=new CustIndex(0, 0);
 		subBSTsInRange(root, 7, 14, ci);
-		System.out.println(ci.index);
+		System.out.println(ci.index);*/
+		
+		/*Node root = new Node(5);
+		//root.left = new Node(1);
+		root.right = new Node(10);
+		//root.left.left = new Node(0);
+		//root.left.right = new Node(4);
+		root.right.left=new Node(7);
+		root.right.left.right=new Node(9);
+		
+		Node root2 = new Node(10);
+		root2.left = new Node(7);
+		root2.right = new Node(20);
+		root2.left.left = new Node(4);
+		root2.left.right = new Node(9);
+		
+		printCommonInTwoBst(root, root2);*/
 	}
 
 }
