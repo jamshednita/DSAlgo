@@ -85,7 +85,7 @@ public class AVLTree {
 				// RL case
 				// 1. Perform right rotation at current root's right child and then
 				// 2. Update current root's right child and it's child hight after rotation.
-				root.setRight(rotateRight(root).getRight());
+				root.setRight(rotateRight(root.getRight()));
 				// 3. Perform left rotation at current root node
 				// 4. Update current root and it's right child hight after rotation.
 				root = rotateLeft(root);

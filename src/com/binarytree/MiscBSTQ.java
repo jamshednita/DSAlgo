@@ -680,6 +680,7 @@ public class MiscBSTQ {
 		}
 		
 		if(root.getData() > key) {
+			// This is the case of inversion since current array element is less than root's key
 			ci.index = ci.index + 1 + (root.getRight()!=null?root.getRight().count:0);
 			root.setLeft(inversionInArrayUtil(root.getLeft(), key, ci));
 		}else {
@@ -706,7 +707,7 @@ public class MiscBSTQ {
 				// RL case
 				// 1. Perform right rotation at current root's right child and then
 				// 2. Update current root's right child and it's child hight after rotation.
-				root.setRight(AVLTree.rotateRight(root).getRight());
+				root.setRight(AVLTree.rotateRight(root.getRight()));
 				
 				sizeCorrection(root.getRight().getRight());
 				sizeCorrection(root.getRight());
@@ -753,6 +754,116 @@ public class MiscBSTQ {
 		node.setCount(1+lSize+rSize);
 	}
 	
+	/**
+	 * Description - Given an array of integers, replace every element with the least greater element on its right side in the array. If there are no greater element on right side, replace it with -1.
+	 * Ex - Input: [8, 58, 71, 18, 31, 32, 63, 92, 43, 3, 91, 93, 25, 80, 28]
+	 *      Output: [18, 63, 80, 25, 32, 43, 80, 93, 80, 25, 93, -1, 28, -1, -1]
+	 * @param arr
+	 */
+	public static void replaceWithLeastLargest(int[] arr) {
+		Node root = null;
+		CustIndex ci = null; // Custom class to track down in-order successor node.
+		/*
+		 * The idea is to insert every array element from right to left (i.e. first last element and so on) into BST or AVLTree and keep track of in-order successor with the help of ci
+		 * once element is inserted into AVLTree then replace it with in-order successor tracked in ci.ptr. If ci.ptr=null that means there is no element greater than that element in the array on right side then replace it with -1 in the array
+		 */
+		
+		for (int i = arr.length - 1; i >= 0; i--) {
+			ci = new CustIndex(0, 0);
+			System.out.println(arr[i]);
+			root = replaceWithLeastLargestUtil(root, arr[i], ci);
+			arr[i] = ci.ptr != null ? ci.ptr.data : -1;
+		}
+	}
+	private static Node replaceWithLeastLargestUtil(Node root, int key, CustIndex ci) {
+		if(root == null) {
+			return new Node(key);
+		}
+		
+		if(root.getData() > key) {
+			ci.ptr = root;
+			root.setLeft(replaceWithLeastLargestUtil(root.getLeft(), key, ci));
+		}else{
+			root.setRight(replaceWithLeastLargestUtil(root.getRight(), key, ci));
+		}
+		
+		AVLTree.hightCorrection(root); // Update hight of the root
+		
+		int lHight=root.getLeft()==null?0:root.getLeft().getHight();
+		int rHight=root.getRight()==null?0:root.getRight().getHight();
+		int balanceFactor = lHight-rHight;
+		if(balanceFactor<-1){
+			if(key>root.getRight().getData()){
+				// RR case
+				// 1. Perform Left Rotation at current root node
+				// 2. Update current root and it's right child hight after rotation.
+				root = AVLTree.rotateLeft(root);
+			}else {
+				// RL case
+				// 1. Perform right rotation at current root's right child and then
+				// 2. Update current root's right child and it's child hight after rotation.
+				root.setRight(AVLTree.rotateRight(root.getRight()));
+				
+				// 3. Perform left rotation at current root node
+				// 4. Update current root and it's right child hight after rotation.
+				root = AVLTree.rotateLeft(root);
+			}
+		}else if(balanceFactor>1){
+			if(key<root.getLeft().getData()){
+				// LL case
+				// 1. Perform Right Rotation at current root node
+				// 2. Update current root and it's left child hight after rotation.
+				root = AVLTree.rotateRight(root);
+			}else {
+				// LR case
+				// 1. Perform Left rotation at current root's left child and then
+				// 2. Update current root's left child and it's child hight after rotation.
+				root.setLeft(AVLTree.rotateLeft(root.getLeft()));
+			
+				// 3. Perform right rotation at current root node
+				// 4. Update current root and it's left child hight after rotation.
+				root = AVLTree.rotateRight(root);
+			}
+		}
+		
+		return root;
+	}
+	/**
+	 * Description - Find pairs with given sum such that pair elements lie in different BSTs
+	 * @param root1 - first BST root
+	 * @param root2 - second BST root
+	 * @param sum - desired sum
+	 */
+	public static void findPairsFromTwoBST(Node root1, Node root2, int sum) {
+		CIndex ci = new CIndex();
+		/*
+		 * 1. convert BSTs to in-place doubly linked list
+		 * 2. traverse one DLL from begining and other from end and check for sum until either of DLL finishes.
+		 * 		a) if sum of nodes data == sum then print both nodes data and advance first DLL node forward and second DLL node backward by one step
+		 * 		b) if sum of nodes data > sum then advance second DLL node backward by one step
+		 * 		c) if sum of nodes data < sum then advance first DLL node forward by one step
+		 */
+		createDLL4mBST(root1, ci);
+		
+		CIndex ci2 = new CIndex();
+		createDLL4mBST(root2, ci2);	
+		
+		findPairsFromTwoBSTUtil(ci.ptr, ci2.end, sum);
+	}
+	private static void findPairsFromTwoBSTUtil(Node ptr1, Node ptr2, int sum) {
+		while(ptr1!=null && ptr2!=null) {
+			if(ptr1.getData()+ptr2.getData() == sum) {
+				System.out.print("("+ptr1.getData()+", "+ptr2.getData()+") ");
+				ptr1 = ptr1.getRight();
+				ptr2 = ptr2.getLeft();
+			}else if(ptr1.getData()+ptr2.getData() > sum) {
+				ptr2=ptr2.getLeft();
+			}else {
+				ptr1 = ptr1.getRight();
+			}
+		}
+				
+	}
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
@@ -895,8 +1006,31 @@ public class MiscBSTQ {
 		
 		printCommonInTwoBst(root, root2);*/
 		
-		int[] arr = {1, 2, 4, 8};//{12,15,24,10,30,5};//{8, 4, 2, 1};
+		/*int[] arr = {1, 2, 4, 8};//{12,15,24,10,30,5};//{8, 4, 2, 1};
 		System.out.println(inversionInArray(arr));
+		
+		int[] arrLG = {8, 58, 71, 18, 31, 32, 63, 92, 43, 3, 91, 93, 25, 80, 28};
+		replaceWithLeastLargest(arrLG);
+		System.out.println(arrLG);*/
+		
+		Node root1 = BinarySearchTree.insert(null, 8);
+	    root1 = BinarySearchTree.insert(root1, 10);
+	    root1 = BinarySearchTree.insert(root1, 3);
+	    root1 = BinarySearchTree.insert(root1, 6);
+	    root1 = BinarySearchTree.insert(root1, 1);
+	    root1 = BinarySearchTree.insert(root1, 5);
+	    root1 = BinarySearchTree.insert(root1, 7);
+	    root1 = BinarySearchTree.insert(root1, 14);
+	    root1 = BinarySearchTree.insert(root1, 13);
+	    
+	    Node root2 = BinarySearchTree.insert(null, 5);
+	    root2 = BinarySearchTree.insert(root2, 18);
+	    root2 = BinarySearchTree.insert(root2, 2);
+	    root2 = BinarySearchTree.insert(root2, 1);
+	    root2 = BinarySearchTree.insert(root2, 3);
+	    root2 = BinarySearchTree.insert(root2, 4);
+	    
+	    findPairsFromTwoBST(root1, root2, 10);
 	}
 
 }
