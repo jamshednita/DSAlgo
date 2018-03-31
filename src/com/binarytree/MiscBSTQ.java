@@ -864,6 +864,56 @@ public class MiscBSTQ {
 		}
 				
 	}
+	/**
+	 * Description - Given a binary search tree and a target node K. The task is to find the node with minimum absolute difference with given target value K.
+	 * @param root
+	 * @param k
+	 */
+	public static void nodeWithMinAbsDiff(Node root, int k) {
+		CustIndex ci = new CustIndex(0, 0);
+		/*
+		 * 1. Search the key in BST and record the closest smaller and greater in ptr and end pointer of CustIndex class.
+		 * 		a) If root data is greater than k then store this root as possible closest greater.
+		 * 		b) If root data is smaller than k then store this root as possible closest smaller.
+		 * 
+		 * 		Time Complexity = O(h) where h = hight of the tree. Hence this can be improved using AVL tree.
+		 * 		Space Complexity = O(1)
+		 */
+		nodeWithMinAbsDiffUtil(root, k, ci);
+		if(ci.ptr!=null && ci.ptr.getData() == k) {
+			System.out.println(k);
+		}else {
+			if(ci.ptr == null ) {
+				System.out.println(ci.end.getData());
+			}else if(ci.end == null){
+				System.out.println(ci.ptr.getData());
+			}else {
+				int less = ci.ptr.getData();
+				int more = ci.end.getData();
+				
+				System.out.println(k-less > more-k ? more : less);
+			}
+		}
+		
+	}
+	private static void nodeWithMinAbsDiffUtil(Node root, int k, CustIndex ci) {
+		if(root == null) {
+			return;
+		}
+		
+		if(root.getData() == k) {
+			ci.ptr=root;
+			return;
+		}
+		else if(root.getData() > k) {
+			ci.end=root;
+			nodeWithMinAbsDiffUtil(root.getLeft(), k, ci);
+		}else {
+			ci.ptr = root;
+			nodeWithMinAbsDiffUtil(root.getRight(), k, ci);
+		}
+		
+	}
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
@@ -1013,7 +1063,7 @@ public class MiscBSTQ {
 		replaceWithLeastLargest(arrLG);
 		System.out.println(arrLG);*/
 		
-		Node root1 = BinarySearchTree.insert(null, 8);
+		/*Node root1 = BinarySearchTree.insert(null, 8);
 	    root1 = BinarySearchTree.insert(root1, 10);
 	    root1 = BinarySearchTree.insert(root1, 3);
 	    root1 = BinarySearchTree.insert(root1, 6);
@@ -1030,7 +1080,27 @@ public class MiscBSTQ {
 	    root2 = BinarySearchTree.insert(root2, 3);
 	    root2 = BinarySearchTree.insert(root2, 4);
 	    
-	    findPairsFromTwoBST(root1, root2, 10);
+	    findPairsFromTwoBST(root1, root2, 11);*/
+		
+		Node root1 = BinarySearchTree.insert(null, 9);
+	    root1 = BinarySearchTree.insert(root1, 4);
+	    root1 = BinarySearchTree.insert(root1, 17);
+	    root1 = BinarySearchTree.insert(root1, 1);
+	    root1 = BinarySearchTree.insert(root1, 6);
+	    root1 = BinarySearchTree.insert(root1, 22);
+	    root1 = BinarySearchTree.insert(root1, 5);
+	    root1 = BinarySearchTree.insert(root1, 7);
+	    root1 = BinarySearchTree.insert(root1, 20);
+	    
+	    nodeWithMinAbsDiff(root1, 4);
+	    nodeWithMinAbsDiff(root1, 18);
+	    nodeWithMinAbsDiff(root1, 12);
+	    nodeWithMinAbsDiff(root1, 19);
+	    nodeWithMinAbsDiff(root1, 2);
+	    
+	    nodeWithMinAbsDiff(root1, 0);
+	    nodeWithMinAbsDiff(root1, 25);
+		
 	}
 
 }
