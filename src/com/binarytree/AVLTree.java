@@ -109,7 +109,7 @@ public class AVLTree {
 		return root;
 	}
 	
-	private static Node rotateLeft(Node pivotNode){
+	public static Node rotateLeft(Node pivotNode){
 		Node p_right=pivotNode.getRight();
 		
 		pivotNode.setRight(p_right.getLeft());
@@ -122,7 +122,7 @@ public class AVLTree {
 		return p_right;
 	}
 	
-	private static Node rotateRight(Node pivotNode){
+	public static Node rotateRight(Node pivotNode){
 		Node p_left=pivotNode.getLeft();
 		
 		pivotNode.setLeft(p_left.getRight());
@@ -135,7 +135,7 @@ public class AVLTree {
 		return p_left;
 	}
 	
-	private static void hightCorrection(Node node){
+	public static void hightCorrection(Node node){
 		int lHight=node.getLeft()==null?0:node.getLeft().getHight();
 		int rHight=node.getRight()==null?0:node.getRight().getHight();
 		

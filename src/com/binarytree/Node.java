@@ -4,13 +4,14 @@ public class Node {
 
 	int data;
 	Node left,right;
-	int count; // To handle duplicates
+	int count; // To handle duplicates OR size
 	int hight; // For AVL tree
 	
 	public Node(int data) {
 		super();
 		this.data = data;
 		this.hight = 1;
+		this.count = 1;
 	}
 	public int getData() {
 		return data;

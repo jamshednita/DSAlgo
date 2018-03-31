@@ -606,9 +606,9 @@ public class MiscBSTQ {
 		int val1=0, val2=0;
 		
 		Stack<Node> stkOne = new Stack<Node>(); // Stack one for first tree in-order traversal
-		Stack<Node> stkTwo = new Stack<Node>(); // Stack one for first tree in-order traversal
+		Stack<Node> stkTwo = new Stack<Node>(); // Stack two for second tree in-order traversal
 		
-		//Run the loop until either of tree in-order traversal is done.
+		//Run the loop until either of tree's in-order traversal is done.
 		while((!stkOne.isEmpty() || root1!=null) && (!stkTwo.isEmpty() || root2!=null)){
 			// Find next in-order element from first tree
 			if(first){
@@ -655,6 +655,104 @@ public class MiscBSTQ {
 			
 		}
 	}
+	/**
+	 * Description - Inversion Count for an array indicates – how far (or close) the array is from being sorted. If array is already sorted then inversion count is 0. If array is sorted in reverse order that inversion count is the maximum.
+	 * Two elements a[i] and a[j] form an inversion if a[i] > a[j] and i < j. For simplicity, we may assume that all elements are unique.
+	 * 
+	 * @param arr - input array
+	 * @return - inversion count
+	 */
+	public static int inversionInArray(int[] arr) {
+		// Using custom class to track the inversion count.
+		CustIndex ci = new CustIndex(0, 0);
+		Node root = null;
+		for (int i : arr) {
+			root = inversionInArrayUtil(root, i, ci);// Prepare a binary search tree or AVLTree by inserting each element from array.
+			// While performing insertion, add 1 + size of right subtree if array element is less than current root. That means the root and right subtree element will form an inversion with this array element since it is smaller than them.
+			// Time complexity will be O(nlogn) if we use AVLTree else with normal BST O(n^2) and space complexity = O(n).
+		}
+		
+		return ci.index;
+	}
+	private static Node inversionInArrayUtil(Node root, int key, CustIndex ci) {
+		if(root == null) {
+			return new Node(key);
+		}
+		
+		if(root.getData() > key) {
+			ci.index = ci.index + 1 + (root.getRight()!=null?root.getRight().count:0);
+			root.setLeft(inversionInArrayUtil(root.getLeft(), key, ci));
+		}else {
+			//root.setCount(root.getCount()+1);
+			root.setRight(inversionInArrayUtil(root.getRight(), key, ci));
+		}
+		//root.setCount(root.getCount()+1);
+		sizeCorrection(root);
+		AVLTree.hightCorrection(root); // Update hight of the root
+		
+		int lHight=root.getLeft()==null?0:root.getLeft().getHight();
+		int rHight=root.getRight()==null?0:root.getRight().getHight();
+		int balanceFactor = lHight-rHight;
+		if(balanceFactor<-1){
+			if(key>root.getRight().getData()){
+				// RR case
+				// 1. Perform Left Rotation at current root node
+				// 2. Update current root and it's right child hight after rotation.
+				root = AVLTree.rotateLeft(root);
+				
+				sizeCorrection(root.getLeft());
+				sizeCorrection(root);
+			}else {
+				// RL case
+				// 1. Perform right rotation at current root's right child and then
+				// 2. Update current root's right child and it's child hight after rotation.
+				root.setRight(AVLTree.rotateRight(root).getRight());
+				
+				sizeCorrection(root.getRight().getRight());
+				sizeCorrection(root.getRight());
+				
+				// 3. Perform left rotation at current root node
+				// 4. Update current root and it's right child hight after rotation.
+				root = AVLTree.rotateLeft(root);
+				
+				sizeCorrection(root.getLeft());
+				sizeCorrection(root);
+			}
+		}else if(balanceFactor>1){
+			if(key<root.getLeft().getData()){
+				// LL case
+				// 1. Perform Right Rotation at current root node
+				// 2. Update current root and it's left child hight after rotation.
+				root = AVLTree.rotateRight(root);
+				
+				sizeCorrection(root.getRight());
+				sizeCorrection(root);
+			}else {
+				// LR case
+				// 1. Perform Left rotation at current root's left child and then
+				// 2. Update current root's left child and it's child hight after rotation.
+				root.setLeft(AVLTree.rotateLeft(root.getLeft()));
+				
+				sizeCorrection(root.getLeft().getLeft());
+				sizeCorrection(root.getLeft());
+				// 3. Perform right rotation at current root node
+				// 4. Update current root and it's left child hight after rotation.
+				root = AVLTree.rotateRight(root);
+				
+				sizeCorrection(root.getRight());
+				sizeCorrection(root);
+			}
+		}
+		return root;
+	}
+	
+	private static void sizeCorrection(Node node) {
+		int lSize = node.getLeft() == null ? 0 : node.getLeft().getCount();
+		int rSize = node.getRight() == null ? 0 : node.getRight().getCount();
+		
+		node.setCount(1+lSize+rSize);
+	}
+	
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
@@ -731,7 +829,7 @@ public class MiscBSTQ {
 		//System.out.println(mergeTwoBalancedBST(root, root1, 8));
 		mergeAndPrint(root, root1);*/
 		
-		Node root = new Node(6);
+		/*Node root = new Node(6);
 		root.left = new Node(-13);
 		root.right = new Node(14);
 		root.left.right = new Node(-12);
@@ -741,11 +839,11 @@ public class MiscBSTQ {
 		root.right.left.left=new Node(7);
 		
 		//printTripletOfZero(root);
-		findPair4SumK(root, 20);
+		//findPair4SumK(root, 20);
 		//Node rangeRoot=removeOutOfRange(root, -10, 8);
 		//System.out.println(rangeRoot.getData());
 		
-		/*System.out.println(nodesInRange(root, -13, 7));
+		System.out.println(nodesInRange(root, -13, 7));
 		System.out.println(nodesInRange(root, -11, 7));
 		System.out.println(nodesInRange(root, -11, 8));
 		System.out.println(nodesInRange(root, -1, 5));
@@ -796,6 +894,9 @@ public class MiscBSTQ {
 		root2.left.right = new Node(9);
 		
 		printCommonInTwoBst(root, root2);*/
+		
+		int[] arr = {1, 2, 4, 8};//{12,15,24,10,30,5};//{8, 4, 2, 1};
+		System.out.println(inversionInArray(arr));
 	}
 
 }
