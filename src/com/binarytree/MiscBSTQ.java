@@ -914,6 +914,76 @@ public class MiscBSTQ {
 		}
 		
 	}
+	/**
+	 * Description - Given Binary Search Tree. The task is to find sum of all elements smaller than and equal to Kth smallest element.
+	 * @param root - BST root
+	 * @param k
+	 * @return - Sum of k smallest element.
+	 */
+	public static int sumOfKSmallest(Node root, int k) {
+		if(root == null)
+			return 0;
+		// With the help of custom class we can find out sum of k smallest in min member variable of ci.
+		CustIndex ci = new CustIndex(0, 0);
+		ci.index = k;
+		sumOfKSmallestUtil(root, ci);
+		return ci.index == 0 ? ci.min : 0;
+	}
+	private static void sumOfKSmallestUtil(Node root, CustIndex ci) {
+		if(root == null || ci.index == 0)
+			return;
+		
+		sumOfKSmallestUtil(root.getLeft(), ci);
+		if (ci.index != 0) {
+			ci.index--;
+			ci.min = ci.min + root.getData();
+		}
+		sumOfKSmallestUtil(root.getRight(), ci);
+	}
+	/**
+	 * Description - Maximum element between two nodes of BST
+	 * @param root - BST root
+	 * @param x - starting range
+	 * @param y - ending range
+	 */
+	public static void maxBwTwoNodes(Node root, int x, int y) {
+		/*
+		 * 1. Find the ancestor of this two nodes
+		 * 2. From ancestor, find greatest toward bigger of the value.
+		 */
+		Node ancestor = findAncestor(root, x, y);
+		CustIndex ci = new CustIndex(0, 0);
+		maxBwTwoNodesUtil(ancestor, y, ci);
+		System.out.println("Max element between "+ci.ptr.getData());
+	}
+	private static void maxBwTwoNodesUtil(Node ancestor, int y, CustIndex ci) {
+		if(ancestor == null)
+			return;
+		if(ancestor.getData() == y) {
+			if(ci.ptr == null) {
+				ci.ptr = ancestor;
+			}
+			
+			return;
+		}else if(ancestor.getData() > y) {
+			ci.ptr = ancestor;
+			maxBwTwoNodesUtil(ancestor.getLeft(), y, ci);
+		}else {
+			maxBwTwoNodesUtil(ancestor.getRight(), y, ci);
+		}
+	}
+	private static Node findAncestor(Node root, int x, int y) {
+		if(root == null) {
+			return null;
+		}
+		
+		if(x<=root.getData() && root.getData()<=y)
+			return root;
+		else if(x>root.getData())
+			return findAncestor(root.getRight(), x, y);
+		else
+			return findAncestor(root.getLeft(), x, y);
+	}
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
@@ -1082,7 +1152,7 @@ public class MiscBSTQ {
 	    
 	    findPairsFromTwoBST(root1, root2, 11);*/
 		
-		Node root1 = BinarySearchTree.insert(null, 9);
+		/*Node root1 = BinarySearchTree.insert(null, 9);
 	    root1 = BinarySearchTree.insert(root1, 4);
 	    root1 = BinarySearchTree.insert(root1, 17);
 	    root1 = BinarySearchTree.insert(root1, 1);
@@ -1099,8 +1169,24 @@ public class MiscBSTQ {
 	    nodeWithMinAbsDiff(root1, 2);
 	    
 	    nodeWithMinAbsDiff(root1, 0);
-	    nodeWithMinAbsDiff(root1, 25);
+	    nodeWithMinAbsDiff(root1, 25);*/
 		
+		/*Node root = BinarySearchTree.insert(null, 20);
+	    root = BinarySearchTree.insert(root, 8);
+	    root = BinarySearchTree.insert(root, 4);
+	    root = BinarySearchTree.insert(root, 12);
+	    root = BinarySearchTree.insert(root, 10);
+	    root = BinarySearchTree.insert(root, 14);
+	    root = BinarySearchTree.insert(root, 22);
+		
+	    System.out.println(sumOfKSmallest(root, 3));*/
+		
+		int arr[] = { 18, 36, 9, 6, 12, 10, 1, 8 };
+		Node root = null;
+		for (int i = 0; i < arr.length; i++) {
+			root = BinarySearchTree.insert(root, arr[i]);
+		}
+		maxBwTwoNodes(root, 1, 10);
 	}
 
 }
