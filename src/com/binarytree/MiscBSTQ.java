@@ -136,12 +136,18 @@ public class MiscBSTQ {
 	 * @param ci
 	 * @return
 	 */
-	public static CustIndex largestSubBST(Node root, CustIndex ci){
+	public static int largestSubBST(Node root) {
+		CustIndex ci = new CustIndex(root.getData(), root.getData());
+		return largestSubBSTUtil(root, ci).index;
+	 }
+	private static CustIndex largestSubBSTUtil(Node root, CustIndex ci){
 		if(root == null)
 			return ci;
-		
-		CustIndex lst = largestSubBST(root.getLeft(), new CustIndex(root.getData(), root.getData())); // Check if left subtree is BST
-		CustIndex rst = largestSubBST(root.getRight(), new CustIndex(root.getData(), root.getData())); // Check if right subtree is BST
+		/*
+		 * 
+		 */
+		CustIndex lst = largestSubBSTUtil(root.getLeft(), new CustIndex(root.getData(), root.getData())); // Check if left subtree is BST
+		CustIndex rst = largestSubBSTUtil(root.getRight(), new CustIndex(root.getData(), root.getData())); // Check if right subtree is BST
 		if(lst.bst && rst.bst && lst.max<=root.getData() && rst.min>=root.getData()){ // left and right subtree both are BST and max of left should less than roo and min of right should greater than root.
 			ci.bst=true;
 			ci.index=lst.index+rst.index+1;
@@ -984,6 +990,43 @@ public class MiscBSTQ {
 		else
 			return findAncestor(root.getLeft(), x, y);
 	}
+	/**
+	 * Description - Given a Preorder traversal of a Binary Search Tree. The task is to print leaf nodes of the Binary Search Tree.
+	 * With 
+	 * @param preorder
+	 */
+	public static void printLeafsFromPre(int[] preorder) {
+		Stack<Integer> stk = new Stack<Integer>();
+		for (int i = 0; i < preorder.length; i++) {
+			/*
+			 * Push to array element into stack until stack's top element is greater than processing array element. i.e maintain sorted descending stack.
+			 */
+			while(stk.isEmpty() || stk.peek()>preorder[i]) {
+				stk.push(preorder[i++]);
+			}
+			/*
+			 * Pop the stack until we found top element is greater than current array element. The Idea is if we are able to pop stack atleast twice then first popped element will always be leaf.
+			 * i.e if current processing preorder array element is greater than stack's two top element then it can be safely said that current element will be right child of stack 2nd top element not the top element
+			 * Hence top stack element is a leaf.
+			 */
+			int popCount=0;
+			int topElement=-1;// Assuming all element are natural numbers i.e >=0
+			while(!stk.isEmpty() && stk.peek()<preorder[i]) {
+				if(topElement == -1) {
+					topElement = stk.pop(); // Get the first poped element.
+				}else {
+					stk.pop();
+				}
+				popCount++;
+			}
+			if(popCount >= 2) {
+				System.out.print(topElement + " ");
+			}
+			stk.push(preorder[i]);
+		}
+		
+		System.out.println(stk.peek()); // Last element of preorder array is always going to be leaf.
+	}
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
@@ -1181,12 +1224,15 @@ public class MiscBSTQ {
 		
 	    System.out.println(sumOfKSmallest(root, 3));*/
 		
-		int arr[] = { 18, 36, 9, 6, 12, 10, 1, 8 };
+		/*int arr[] = { 18, 36, 9, 6, 12, 10, 1, 8 };
 		Node root = null;
 		for (int i = 0; i < arr.length; i++) {
 			root = BinarySearchTree.insert(root, arr[i]);
 		}
-		maxBwTwoNodes(root, 1, 10);
+		maxBwTwoNodes(root, 1, 10);*/
+		
+		int[] preArr = {890, 325, 290, 100, 300, 530, 400, 600, 965, 900, 1000};//{890, 325, 290, 625, 965};// {890, 325, 290, 965};// {890, 325, 290, 100, 300, 965, 900, 1000};
+		printLeafsFromPre(preArr);
 	}
 
 }
