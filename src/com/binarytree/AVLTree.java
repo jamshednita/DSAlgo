@@ -142,6 +142,58 @@ public class AVLTree {
 		node.setHight((lHight>rHight?lHight:rHight)+1);
 	}
 	
+	public static Node avlInsertWithDuplicate(Node root, int key){
+		if(root == null){
+			return new Node(key);
+		}
+		if(root.getData() == key){
+			root.setCount(root.getCount()+1);
+			return root;
+		}
+		else if(key<root.getData())
+			root.setLeft(avlInsert(root.getLeft(), key));
+		else
+			root.setRight(avlInsert(root.getRight(), key));
+		
+		hightCorrection(root); // Update hight of the root
+		
+		int lHight=root.getLeft()==null?0:root.getLeft().getHight();
+		int rHight=root.getRight()==null?0:root.getRight().getHight();
+		int balanceFactor = lHight-rHight;
+		if(balanceFactor<-1){
+			if(key>root.getRight().getData()){
+				// RR case
+				// 1. Perform Left Rotation at current root node
+				// 2. Update current root and it's right child hight after rotation.
+				root = rotateLeft(root);
+			}else {
+				// RL case
+				// 1. Perform right rotation at current root's right child and then
+				// 2. Update current root's right child and it's child hight after rotation.
+				root.setRight(rotateRight(root.getRight()));
+				// 3. Perform left rotation at current root node
+				// 4. Update current root and it's right child hight after rotation.
+				root = rotateLeft(root);
+			}
+		}else if(balanceFactor>1){
+			if(key<root.getLeft().getData()){
+				// LL case
+				// 1. Perform Right Rotation at current root node
+				// 2. Update current root and it's left child hight after rotation.
+				root = rotateRight(root);
+			}else {
+				// LR case
+				// 1. Perform Left rotation at current root's left child and then
+				// 2. Update current root's left child and it's child hight after rotation.
+				root.setLeft(rotateLeft(root.getLeft()));
+				// 3. Perform right rotation at current root node
+				// 4. Update current root and it's left child hight after rotation.
+				root = rotateRight(root);
+			}
+		}
+		return root;
+	}
+	
 	public static void main(String[] args) {
 		/*Node avlRoot = avlInsert(null, 20);
 		avlRoot = avlInsert(avlRoot, 10);

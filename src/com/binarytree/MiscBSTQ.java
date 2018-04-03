@@ -1,6 +1,9 @@
 package com.binarytree;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
+import java.util.TreeMap;
 
 public class MiscBSTQ {
 	/**
@@ -662,7 +665,7 @@ public class MiscBSTQ {
 		}
 	}
 	/**
-	 * Description - Inversion Count for an array indicates – how far (or close) the array is from being sorted. If array is already sorted then inversion count is 0. If array is sorted in reverse order that inversion count is the maximum.
+	 * Description - Inversion Count for an array indicates how far (or close) the array is from being sorted. If array is already sorted then inversion count is 0. If array is sorted in reverse order that inversion count is the maximum.
 	 * Two elements a[i] and a[j] form an inversion if a[i] > a[j] and i < j. For simplicity, we may assume that all elements are unique.
 	 * 
 	 * @param arr - input array
@@ -1027,6 +1030,195 @@ public class MiscBSTQ {
 		
 		System.out.println(stk.peek()); // Last element of preorder array is always going to be leaf.
 	}
+	public static int medianOfBST(Node root){
+		int countOfNodes = countNodes(root);
+		Node curr=root, pre=null, prev=null;
+		int medCount=0;
+		while(curr!=null){
+			if(curr.getLeft() == null){
+				// Count node if its left is NULL
+				medCount++;
+				// Move to its right
+				
+				if(countOfNodes%2!=0 && medCount == (countOfNodes+1)/2 ){
+					System.out.println("First Place");
+					return curr.getData();
+				}
+					
+				else if(countOfNodes%2==0 && medCount == (countOfNodes/2)+1){
+					return (prev.getData()+curr.getData())/2;
+				}
+				prev=curr;
+				curr=curr.getRight();
+			}else{
+				/* Find the inorder predecessor of current */
+				pre = curr.getLeft();
+				
+				while(pre.getRight()!=null && pre.getRight()!=curr)
+					pre=pre.getRight();
+				/* Make current as right child of its
+	               inorder predecessor */
+				if(pre.getRight()==null){
+					pre.setRight(curr);
+					curr = curr.getLeft();
+				}else{
+					/* Revert the changes made in if part to
+		               restore the original tree i.e., fix
+		               the right child of predecssor */
+					
+					pre.setRight(null);
+					// Increment count if the current
+	                // node is to be visited
+					medCount++;
+
+					if(countOfNodes%2!=0 && medCount == (countOfNodes+1)/2 ){
+						System.out.println("First Place");
+						return curr.getData();
+					}
+						
+					else if(countOfNodes%2==0 && medCount == (countOfNodes/2)+1){
+						return (prev.getData()+curr.getData())/2;
+					}
+					
+					prev=curr;
+					curr = curr.getRight();
+					
+				}
+			}
+		}
+		return medCount;// This is included to just overcome compiler issue. I bet, this statement will never be executed if tree is not null
+	}
+	/* Function to count nodes in a  binary search tree
+	   using Morris Inorder traversal*/
+	private static int countNodes(Node root) {
+		Node curr, pre;
+		int count=0;
+		
+		if(root==null)
+			return count;
+		
+		curr=root;
+		
+		while(curr!=null){
+			if(curr.getLeft() == null){
+				// Count node if its left is NULL
+				count++;
+				// Move to its right
+				curr=curr.getRight();
+			}else{
+				/* Find the inorder predecessor of current */
+				pre = curr.getLeft();
+				
+				while(pre.getRight()!=null && pre.getRight()!=curr)
+					pre=pre.getRight();
+				/* Make current as right child of its
+	               inorder predecessor */
+				if(pre.getRight()==null){
+					pre.setRight(curr);
+					curr = curr.getLeft();
+				}else{
+					/* Revert the changes made in if part to
+		               restore the original tree i.e., fix
+		               the right child of predecssor */
+					
+					pre.setRight(null);
+					// Increment count if the current
+	                // node is to be visited
+					count++;
+					curr = curr.getRight();
+				}
+			}
+		}
+		
+		return count;
+	}
+	/**
+	 * Description - Remove all leaf nodes from the binary search tree.
+	 * @param root
+	 * @return
+	 */
+	public static Node removeLeafsFromBST(Node root){
+		/*
+		 * Do preorder traversal of the BST and delete the leaf node. Why pre-order?, If we choose any other depth first traversal than preorder then we might end up deleting a node which was not leaf but after deletion of its leaf it got transformed into leaf.
+		 * So, to avoid that process root first and then it's child.
+		 */
+		if(root == null || (root.getLeft()==null && root.getRight()==null)){
+			return null;
+		}
+		
+		root.setLeft(removeLeafsFromBST(root.getLeft()));
+		root.setRight(removeLeafsFromBST(root.getRight()));
+		
+		return root;
+	}
+	/**
+	 * Description - Given a Binary Search Tree and two keys in it. Find the distance between two nodes with given two keys. It may be assumed that both keys exist in BST.
+	 * @param root
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static int pathBwTwoNodes(Node root, int a, int b){
+		Node lca=findAncestor(root, a, b); //find lowest common ancestor of a and b.
+		int a_lca_dist=distanceUtil(lca, a);
+		int b_lca_dist=distanceUtil(lca, b);
+		
+		return a_lca_dist+b_lca_dist;
+	}
+	private static int distanceUtil(Node root, int a) {
+		if(root.getData() == a)
+			return 0;
+
+		if(root.getData()>a){
+			return 1+distanceUtil(root.getLeft(), a);
+		}else{
+			return 1+distanceUtil(root.getRight(), a);
+		}
+		
+	}
+	
+	public static void pairsWithMinValue(int[] inArr, int k){
+		Node root=null;
+		
+		for (int i = 0; i < inArr.length; i++) {
+			root = AVLTree.avlInsertWithDuplicate(root, inArr[i]);
+		}
+		
+		CIndex ci =new CIndex();
+		createDLL4mBST(root, ci);
+		
+		Map<Integer, Integer> minValuePairMap= new TreeMap<Integer, Integer>();
+		pairsWithMinValueUtil(ci.ptr, ci.end, k, minValuePairMap);
+		
+		for (Entry<Integer, Integer> entry : minValuePairMap.entrySet()) {
+			System.out.println("Minimum possible value of |ai+aj-k| is  :: "+entry.getKey());
+			System.out.println("Pairs of minimum possible value  :: "+entry.getValue());
+			return;
+		}
+	}
+	private static void pairsWithMinValueUtil(Node ptr, Node end, int k,
+			Map<Integer, Integer> minValuePairMap) {
+		while (ptr != null && end != null && ptr.getData() < end.getData()) {
+			if (ptr.getData() + end.getData() == k) {
+				Integer existing = minValuePairMap.get(0);
+				minValuePairMap.put(0, existing != null ? existing.intValue() + (ptr.getCount() * end.getCount()) : (ptr.getCount() * end.getCount()));
+			
+				ptr=ptr.getRight();
+				end=end.getLeft();
+			}else if(ptr.getData() + end.getData() > k){
+				int key = ptr.getData() + end.getData() - k ;
+				Integer existing = minValuePairMap.get(key);
+				minValuePairMap.put(key, existing != null ? existing.intValue() + (ptr.getCount() * end.getCount()) : (ptr.getCount() * end.getCount()));
+				end=end.getLeft();
+			}else{
+				int key = k - ptr.getData() + end.getData();
+				Integer existing = minValuePairMap.get(key);
+				minValuePairMap.put(key, existing != null ? existing.intValue() + (ptr.getCount() * end.getCount()) : (ptr.getCount() * end.getCount()));
+				ptr=ptr.getRight();
+			}
+		}
+		
+	}
 	public static void main(String[] args) {
 		/*Node root=new Node(20);
 		root.setLeft(new Node(8));
@@ -1099,7 +1291,6 @@ public class MiscBSTQ {
 		Node root1 = new Node(80);  
 		root1.left = new Node(40);
 		root1.right = new Node(120);
-
 		//System.out.println(mergeTwoBalancedBST(root, root1, 8));
 		mergeAndPrint(root, root1);*/
 		
@@ -1231,8 +1422,37 @@ public class MiscBSTQ {
 		}
 		maxBwTwoNodes(root, 1, 10);*/
 		
-		int[] preArr = {890, 325, 290, 100, 300, 530, 400, 600, 965, 900, 1000};//{890, 325, 290, 625, 965};// {890, 325, 290, 965};// {890, 325, 290, 100, 300, 965, 900, 1000};
-		printLeafsFromPre(preArr);
+		/*int[] preArr = {890, 325, 290, 100, 300, 530, 400, 600, 965, 900, 1000};//{890, 325, 290, 625, 965};// {890, 325, 290, 965};// {890, 325, 290, 100, 300, 965, 900, 1000};
+		printLeafsFromPre(preArr);*/
+		
+		/*Node root = BinarySearchTree.insert(null, 50);
+		root = BinarySearchTree.insert(root, 30);
+		root = BinarySearchTree.insert(root, 20);
+		root = BinarySearchTree.insert(root, 40);
+		root = BinarySearchTree.insert(root, 70);
+		root = BinarySearchTree.insert(root, 60);
+		root = BinarySearchTree.insert(root, 80);
+		//root = BinarySearchTree.insert(root, 75);
+		
+		System.out.println(medianOfBST(root));*/
+		
+		/*Node root = BinarySearchTree.insert(null, 5);
+		root = BinarySearchTree.insert(root, 2);
+		root = BinarySearchTree.insert(root, 12);
+		root = BinarySearchTree.insert(root, 1);
+		root = BinarySearchTree.insert(root, 3);
+		root = BinarySearchTree.insert(root, 9);
+		root = BinarySearchTree.insert(root, 21);
+		
+		root = BinarySearchTree.insert(root, 19);
+		root = BinarySearchTree.insert(root, 25);
+		
+		System.out.println(pathBwTwoNodes(root, 3, 9));
+		System.out.println(pathBwTwoNodes(root, 9, 25));
+		System.out.println(pathBwTwoNodes(root, 5, 19));*/
+		
+		int[] arr = {0, 4, 6, 2, 4};
+		pairsWithMinValue(arr, 7);
 	}
 
 }
