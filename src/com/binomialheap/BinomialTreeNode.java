@@ -12,7 +12,7 @@ public class BinomialTreeNode {
 	public BinomialTreeNode(int data) {
 		super();
 		this.data = data;
-		this.degree = 1;
+		this.degree = 0;
 		this.leftChild = null;
 		this.sibling = null;
 		this.parent = null;
