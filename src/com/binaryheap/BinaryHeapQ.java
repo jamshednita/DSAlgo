@@ -248,6 +248,29 @@ public class BinaryHeapQ {
 		}
 	}
 	
+	public static int minCost2ConnectRopes(int[] ropes, int n) {
+		int cost = 0;
+		
+		MinHeap minHeap = new MinHeap(n);
+		
+		for (int i = 0; i < ropes.length; i++) {
+			minHeap.insert(ropes[i]);
+		}
+		
+		int first=0, second =0;
+		
+		while(minHeap.getHeapSize()!=1) {
+			first = minHeap.extractMin();
+			second = minHeap.extractMin();
+			
+			cost+=first+second;
+			
+			minHeap.insert(first+second);
+		}
+		
+		return cost;
+	}
+	
 	public static void main(String[] args) {
 		/*int arr[] = {1, 23, 12, 9, 30, 2, 50};
 		
@@ -280,6 +303,10 @@ public class BinaryHeapQ {
 	    				{32, 33, 39, 50}};
 	    
 	    printSorted(mat, 4, 4);
+	    
+	    int[] ropes= {4,3,2,6};
+	    
+	    System.out.println(minCost2ConnectRopes(ropes, 4));
 	}
 
 }

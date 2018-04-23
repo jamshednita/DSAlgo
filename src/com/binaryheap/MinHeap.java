@@ -6,6 +6,14 @@ public class MinHeap {
 	private int capacity; // maximum possible size of min heap
 	private int heapSize; // Current number of elements in min heap
 	
+	public int getHeapSize() {
+		return heapSize;
+	}
+
+	public void setHeapSize(int heapSize) {
+		this.heapSize = heapSize;
+	}
+
 	public MinHeap(int capacity) {
 		super();
 		this.capacity = capacity;
