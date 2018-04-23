@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.print.attribute.standard.RequestingUserName;
-
 import com.binarytree.Node;
 
 public class BinaryHeapQ {
@@ -193,13 +191,70 @@ public class BinaryHeapQ {
 		return true;
 	}
 	
+	public static void printSorted(int[][] twoDArr, int m, int n) {
+		// Time Complexity O(mnlogm)
+		// Step 1 =  Create a min heap with all first column elements and minHeapify it.
+		// Step 2 =  Remove root of the min heap and print it. Replace it with next element in the row of the removed element and call minHeapify
+		
+		HeapElement[] minHeap = new HeapElement[m];
+		for (int i = 0; i < m; i++) {
+			minHeap[i] = new HeapElement();
+			minHeap[i].element = twoDArr[i][0];
+			minHeap[i].row = i;
+			minHeap[i].col = 1;
+		}
+		// This loop minHeapify the heap.
+		for(int i= m/2-1; i>=0; i--) {
+			minHeapify(minHeap, m, i);
+		}
+
+		for(int k=0; k<m*n; k++) {
+			HeapElement root = minHeap[0];
+			
+			System.out.print(root.element + " ");
+			HeapElement next = new HeapElement();
+			if(root.col<n) {
+				next.element = twoDArr[root.row][root.col];
+			}else {
+				next.element = Integer.MAX_VALUE;
+			}
+			next.row=root.row;
+			next.col=root.col+1;
+			
+			minHeap[0]=next;
+			minHeapify(minHeap, m, 0);
+		}
+	}
+	
+	private static void minHeapify(HeapElement[] minHeap, int m, int i) {
+		int smallest = i;
+		int l=2*i+1;
+		int r=2*i+2;
+		
+		if(l<m && minHeap[smallest].element > minHeap[l].element) {
+			smallest = l;
+		}
+		
+		if(r<m && minHeap[smallest].element > minHeap[r].element) {
+			smallest = r;
+		}
+		
+		if(smallest != i) {
+			HeapElement temp = minHeap[i];
+			minHeap[i] = minHeap[smallest];
+			minHeap[smallest] = temp;
+			
+			minHeapify(minHeap, m, smallest);
+		}
+	}
+	
 	public static void main(String[] args) {
 		/*int arr[] = {1, 23, 12, 9, 30, 2, 50};
 		
 		//System.out.println(kthLargest(arr, 3, arr.length));
 		System.out.println(kthSmallest(arr, 3, arr.length));*/
 		
-		int k = 3;
+		/*int k = 3;
 	    int inArr[] = {2, 6, 3, 12, 56, 8};
 	    sortK(inArr, inArr.length, k);
 	    
@@ -218,7 +273,13 @@ public class BinaryHeapQ {
 	    System.out.println("Is Heap == "+isHeap(root));
 	    
 	    int arr[] = {90, 15, 10, 7, 12, 2};//{90, 15, 10, 7, 12, 200};
-	    System.out.println("Is max Heap == "+isArrayAMaxHeap(arr, arr.length));
+	    System.out.println("Is max Heap == "+isArrayAMaxHeap(arr, arr.length));*/
+	    int mat[][] = { {10, 20, 30, 40},
+	    				{15, 25, 35, 45},
+	    				{27, 29, 37, 48},
+	    				{32, 33, 39, 50}};
+	    
+	    printSorted(mat, 4, 4);
 	}
 
 }
