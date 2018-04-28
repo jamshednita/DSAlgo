@@ -190,7 +190,12 @@ public class BinaryHeapQ {
 		
 		return true;
 	}
-	
+	/**
+	 * Description - Given an n x n matrix, where every row and column is sorted in non-decreasing order. Print all elements of matrix in sorted order.
+	 * @param twoDArr - 2D array of m*n dimension.
+	 * @param m
+	 * @param n
+	 */
 	public static void printSorted(int[][] twoDArr, int m, int n) {
 		// Time Complexity O(mnlogm)
 		// Step 1 =  Create a min heap with all first column elements and minHeapify it.
@@ -247,67 +252,116 @@ public class BinaryHeapQ {
 			minHeapify(minHeap, m, smallest);
 		}
 	}
-	
+
+	/**
+	 * Description - There are given n ropes of different lengths, we need to connect these ropes into one rope. The cost to connect two ropes is equal to sum of their lengths. We need to connect the ropes with minimum cost.
+	 * 
+	 * For example if we are given 4 ropes of lengths 4, 3, 2 and 6. We can connect the ropes in following ways. 
+	 * 1) First connect ropes of lengths 2 and 3. Now we have three ropes of lengths 4, 6 and 5. 
+	 * 2) Now connect ropes of lengths 4 and 5. Now we have two ropes of lengths 6 and 9. 
+	 * 3) Finally connect the two ropes and all ropes have connected.
+	 * 
+	 * @param ropes
+	 * @param n
+	 * @return
+	 */
 	public static int minCost2ConnectRopes(int[] ropes, int n) {
-		int cost = 0;
-		
-		MinHeap minHeap = new MinHeap(n);
-		
-		for (int i = 0; i < ropes.length; i++) {
-			minHeap.insert(ropes[i]);
-		}
-		
-		int first=0, second =0;
-		
-		while(minHeap.getHeapSize()!=1) {
-			first = minHeap.extractMin();
-			second = minHeap.extractMin();
+			int cost = 0;
 			
-			cost+=first+second;
+			MinHeap minHeap = new MinHeap(n);
 			
-			minHeap.insert(first+second);
-		}
-		
-		return cost;
+			for (int i = 0; i < ropes.length; i++) {
+				minHeap.insert(ropes[i]);
+			}
+			
+			int first=0, second =0;
+			
+			while(minHeap.getHeapSize()!=1) {
+				first = minHeap.extractMin();
+				second = minHeap.extractMin();
+				
+				cost+=first+second;
+				
+				minHeap.insert(first+second);
+			}
+			
+			return cost;
 	}
+	/**
+	 * Description - Given k sorted arrays of size n each, merge them and print the sorted output. This method can be extended to solve "Sort numbers stored on different machines".
+	 * 
+	 * @param kArr - Array of k array
+	 * @param kArrSize - Internal array size
+	 * @param k - no of array
+	 */
+	public static void mergeKsorted(int[][] kArr, int kArrSize, int k) {
+		// Step 1 - create minheap of size k with first element of all k sorted array. MinHeapify it.
+		// Step 2 - extract min and print it and replace root with next element of array this removed element was part of. MinHeapify it.
+		HeapElement[] minHeap = new HeapElement[k];
+		
+		for (int i = 0; i < minHeap.length; i++) {
+			minHeap[i] = new HeapElement();
+			minHeap[i].row = i;
+			minHeap[i].col = 0;
+			minHeap[i].element = kArr[i][0];
+		}
+		
+		for(int j=k/2-1; j>=0; j--) {
+			minHeapify(minHeap, k, j);
+		}
 	
+		for(int m = 0; m<kArrSize*k; m++) {
+			HeapElement root = minHeap[0];
+			System.out.print(root.element);
+			
+			HeapElement next = new HeapElement();
+			
+			if(next.col < kArrSize)
+				next.element = kArr[next.row][next.col];
+			else
+				next.element = Integer.MAX_VALUE;
+
+			next.row = root.row;
+			next.col = root.col+1;
+			minHeap[0] = next;
+			
+			minHeapify(minHeap, k, 0);
+		}
+	
+	}
+		
 	public static void main(String[] args) {
-		/*int arr[] = {1, 23, 12, 9, 30, 2, 50};
-		
-		//System.out.println(kthLargest(arr, 3, arr.length));
-		System.out.println(kthSmallest(arr, 3, arr.length));*/
-		
-		/*int k = 3;
-	    int inArr[] = {2, 6, 3, 12, 56, 8};
-	    sortK(inArr, inArr.length, k);
-	    
-	    Arrays.stream(inArr).forEach(System.out::println);
-	    
-	    Node root = new Node(10);
-	    root.setLeft(new Node(9));
-	    root.setRight(new Node(8));
-	    
-	    root.getLeft().setLeft(new Node(7));
-	    root.getLeft().setRight(new Node(6));
-	    
-	    root.getRight().setLeft(new Node(5));
-	    root.getRight().setRight(new Node(4));
-	    
-	    System.out.println("Is Heap == "+isHeap(root));
-	    
-	    int arr[] = {90, 15, 10, 7, 12, 2};//{90, 15, 10, 7, 12, 200};
-	    System.out.println("Is max Heap == "+isArrayAMaxHeap(arr, arr.length));*/
-	    int mat[][] = { {10, 20, 30, 40},
-	    				{15, 25, 35, 45},
-	    				{27, 29, 37, 48},
-	    				{32, 33, 39, 50}};
-	    
-	    printSorted(mat, 4, 4);
-	    
-	    int[] ropes= {4,3,2,6};
-	    
-	    System.out.println(minCost2ConnectRopes(ropes, 4));
+		/*
+		 * int arr[] = {1, 23, 12, 9, 30, 2, 50};
+		 * 
+		 * //System.out.println(kthLargest(arr, 3, arr.length));
+		 * System.out.println(kthSmallest(arr, 3, arr.length));
+		 */
+
+		/*
+		 * int k = 3; int inArr[] = {2, 6, 3, 12, 56, 8}; sortK(inArr, inArr.length, k);
+		 * 
+		 * Arrays.stream(inArr).forEach(System.out::println);
+		 * 
+		 * Node root = new Node(10); root.setLeft(new Node(9)); root.setRight(new
+		 * Node(8));
+		 * 
+		 * root.getLeft().setLeft(new Node(7)); root.getLeft().setRight(new Node(6));
+		 * 
+		 * root.getRight().setLeft(new Node(5)); root.getRight().setRight(new Node(4));
+		 * 
+		 * System.out.println("Is Heap == "+isHeap(root));
+		 * 
+		 * int arr[] = {90, 15, 10, 7, 12, 2};//{90, 15, 10, 7, 12, 200};
+		 * System.out.println("Is max Heap == "+isArrayAMaxHeap(arr, arr.length));
+		 */
+		int mat[][] = { { 10, 20, 30, 40 }, { 15, 25, 35, 45 }, { 27, 29, 37, 48 }, { 32, 33, 39, 50 } };
+
+		printSorted(mat, 4, 4);
+
+		int[] ropes = { 4, 3, 2, 6 };
+
+		System.out.println(minCost2ConnectRopes(ropes, 4));
 	}
 
-	
 }
