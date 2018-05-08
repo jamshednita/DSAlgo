@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.binarytree.Node;
 
@@ -105,6 +106,24 @@ public class EasyQ {
 			hashTable.add(arr[i]);
 		}
 	}
+	
+	public static boolean checkDuplicatesWithinK(int[] arr, int k) {
+		Set<Integer> hashTableSet= new HashSet<>();
+		
+		for(int i=0; i<arr.length; i++) {
+			if(hashTableSet.contains(arr[i])) {
+				return true;
+			}
+			
+			hashTableSet.add(arr[i]);
+			
+			if(i>k) {
+				hashTableSet.remove(arr[i-k]);
+			}
+		}
+		
+		return false;
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Node root = new Node(1);
@@ -118,6 +137,12 @@ public class EasyQ {
         root.getRight().getRight().setRight(new Node(9));
         
         printBinaryTreeVirtical(root);
+        
+        int inputArr[] = {10, 5, 3, 4, 3, 5, 6};
+        if (checkDuplicatesWithinK(inputArr, 4))
+           System.out.println("Yes");
+        else
+           System.out.println("No");
 	}
 
 }
