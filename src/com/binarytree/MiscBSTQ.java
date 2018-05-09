@@ -1176,7 +1176,12 @@ public class MiscBSTQ {
 		}
 		
 	}
-	
+	/**
+	 * Description - Minimum Possible value of |ai + aj – k| for given array and k.
+	 * You are given an array of n integer and an integer K. Find the number of total unordered pairs {i, j} such that absolute value of (ai + aj – K), i.e., |ai + aj – k| is minimal possible where i != j.
+	 * @param inArr
+	 * @param k
+	 */
 	public static void pairsWithMinValue(int[] inArr, int k){
 		Node root=null;
 		
