@@ -348,6 +348,54 @@ public class IntermediateQ {
 		
 		return res;
 	}
+	
+	/**
+	 * Description - Given an array of size n and an integer k, return the of count
+	 * of distinct numbers in all windows of size k. Time Complexity - O(n) Input:
+	 * arr[] = {1, 2, 1, 3, 4, 2, 3}; k = 4 Output: 3 4 4 3
+	 * 
+	 * Explanation: 
+	 * First window is {1, 2, 1, 3}, count of distinct numbers is 3
+	 * Second window is {2, 1, 3, 4} count of distinct numbers is 4 
+	 * Third window is {1, 3, 4, 2} count of distinct numbers is 4 
+	 * Fourth window is {3, 4, 2, 3} count of distinct numbers is 3
+	 * 
+	 * @param arr
+	 * @param k
+	 */
+	public static void printDistinctInWindow(int[] arr, int k) {
+		Map<Integer, Integer> countMap =  new HashMap<>();
+		int i = 0;
+		for (; i < k; i++) {
+			if (countMap.containsKey(arr[i])) {
+				countMap.put(arr[i], countMap.get(arr[i])+1);
+			}else {
+				countMap.put(arr[i], 1);
+			}
+		}
+		int dist_count=countMap.keySet().size();
+		System.out.println("distint count " +dist_count);
+		
+		while(i<arr.length) {
+			int count = countMap.get(arr[i-k]);
+			
+			if(count>1) {
+				countMap.put(arr[i-k], count-1);
+			}else {
+				countMap.remove(arr[i-k]);
+				dist_count--;
+			}
+			
+			if (countMap.containsKey(arr[i])) {
+				countMap.put(arr[i], countMap.get(arr[i])+1);
+			}else {
+				countMap.put(arr[i], 1);
+				dist_count++;
+			}
+			System.out.println("distint count " +dist_count);
+			i++;
+		}
+	}
 	public static void main(String[] args) {
 		/*Map<String, String> dataSet = new HashMap<String, String>();
         dataSet.put("Chennai", "Banglore");
@@ -376,10 +424,14 @@ public class IntermediateQ {
 		//System.out.println(isPairsAmulBeqCmulD(abcdAddArr));
 		
 		//printPairsAplusBeqCplusD(abcdAddArr);
-		printPairsAmulBeqCmulD(abcdAddArr);*/
+		printPairsAmulBeqCmulD(abcdAddArr);
 		
 		int zeroArr[] = {15, -2, 2, -8, 1, 7, 10, 23};
-		System.out.println(maxLengthZeroSumSubArray(zeroArr));
+		System.out.println(maxLengthZeroSumSubArray(zeroArr));*/
+		
+		int arr[] =  {1, 2, 1, 3, 4, 2, 3};
+        int k = 4;
+        printDistinctInWindow(arr, k);
 		
 	}
 }
