@@ -4,12 +4,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 public class IntermediateQ {
+	
+	public static class Pair{
+		int first, second;
+		
+		public Pair(int first, int second) {
+			this.first = first;
+			this.second = second;
+		}
+	}
+	
 	/**
 	 * Description - Given a list of tickets, find itinerary in order using the given list. 
 	 * Ex - Input: 	"Chennai" -> "Banglore" 
@@ -85,7 +96,7 @@ public class IntermediateQ {
 		return count;
 	}
 	/**
-	 * Description - Check if an array can be divided into pairs whose sum is divisible by k
+	 * Description - Check if an array can be divided into pairs whose sum is divisible by k.
 	 * @param arr
 	 * @param k
 	 * @return
@@ -101,7 +112,242 @@ public class IntermediateQ {
 		}
 		return false;
 	}
-
+	/**
+	 * Description - Check if an array can be divided into pairs whose sum is divisible by k. Print all possible pairs.
+	 * @param arr
+	 * @param k
+	 * @return
+	 */
+	public static void printPairDivByK(int[] arr, int k) {
+		Map<Integer, List<Integer>> remElementMap = printPairDivByKUtil(arr, k);
+		int totalPairs = 0;
+		Iterator<Entry<Integer, List<Integer>>> remItr = remElementMap.entrySet().iterator();
+		
+		while(remItr.hasNext()) {
+			Entry<Integer, List<Integer>> entry = remItr.next();
+			int rem = entry.getKey();
+			List<Integer> elements = entry.getValue();
+			int n = elements.size();
+			if(n>=2 && rem==k/2 && k%2==0) {
+				totalPairs +=  (factorial(n)/((factorial(n-2)*(factorial(2)))));
+				
+				printPairs(elements, null); //This method is to print all pairs 
+			}
+			else if(remElementMap.get(k-rem) != null) {
+				List<Integer> nextElements = remElementMap.get(k-rem);
+				int n2 = nextElements.size();
+				
+				totalPairs += (factorial(n)/((factorial(n-n2)*(factorial(n2)))));
+				printPairs(elements, nextElements); //This method is to print all pairs 
+			}
+			
+			remItr.remove();
+		}
+		
+		System.out.println("Total Pair count :: " +totalPairs);
+	}
+	private static Map<Integer, List<Integer>> printPairDivByKUtil(int[] arr, int k) {
+		Map<Integer, List<Integer>> remElementMap = new HashMap<>();
+		for (int i = 0; i < arr.length; i++) {
+			int rem = arr[i]%k;
+			if(remElementMap.get(rem) != null) {
+				List<Integer> existing = remElementMap.get(rem);
+				existing.add(arr[i]);
+				remElementMap.put(rem, existing);
+			}else {
+				List<Integer> list = new ArrayList<>();
+				list.add(arr[i]);
+				remElementMap.put(rem, list);
+			}
+		}
+		return remElementMap;
+	}
+	private static void printPairs(List<Integer> firstList, List<Integer> secondList) {
+		if(secondList == null)
+			secondList = firstList;
+		
+		for(int i=0; i<firstList.size(); i++) {
+			for(int j=i; j<secondList.size(); j++) {
+				if(firstList.get(i)!=secondList.get(j))
+					System.out.println("("+firstList.get(i)+", "+secondList.get(j)+")");
+			}
+		}
+		
+	}
+	private static int factorial(int n) {
+		if(n<=0)
+			return 1;
+		
+		return n*factorial(n-1);
+	}
+	/**
+	 * Description - Find four elements a, b, c and d in an array such that a+b = c+d. It just print one of possible quartet.
+	 * @param arr
+	 * @return
+	 */
+	public static boolean isPairsAplusBeqCplusD(int[] arr) {
+		Map<Integer, Pair> hashMap = new HashMap<>();
+		for (int i = 0; i < arr.length-1; i++) {
+			for (int j = i+1; j < arr.length; j++) {
+				int sum=arr[i]+arr[j];
+				if(!hashMap.containsKey(sum))
+					hashMap.put(sum, new Pair(arr[i], arr[j]));
+				else {
+					Pair existing = hashMap.get(sum);
+					System.out.println(existing.first + ", "+existing.second+ " = " +arr[i]+", "+arr[j]);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Description - Find four elements a, b, c and d in an array such that a*b = c*d. It just print one of possible quartet.
+	 * @param arr
+	 * @return
+	 */
+	public static boolean isPairsAmulBeqCmulD(int[] arr) {
+		Map<Integer, Pair> hashMap = new HashMap<>();
+		for (int i = 0; i < arr.length-1; i++) {
+			for (int j = i+1; j < arr.length; j++) {
+				int mul=arr[i]*arr[j];
+				if(!hashMap.containsKey(mul))
+					hashMap.put(mul, new Pair(arr[i], arr[j]));
+				else {
+					Pair existing = hashMap.get(mul);
+					System.out.println(existing.first + ", "+existing.second+ " = " +arr[i]+", "+arr[j]);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Description - Find four elements a, b, c and d in an array such that a+b = c+d. Print all possible quartet.
+	 * @param arr
+	 * @return
+	 */
+	public static void printPairsAplusBeqCplusD(int[] arr) {
+		// Step 1 - Create a map containing all pair list as value for a perticular sum as key.
+		Map<Integer, List<Pair>> hashMap = new HashMap<>();
+		for (int i = 0; i < arr.length-1; i++) {
+			for (int j = i+1; j < arr.length; j++) {
+				int sum=arr[i]+arr[j];
+				if(!hashMap.containsKey(sum)) {
+					List<Pair> list = new ArrayList<>();
+					list.add(new Pair(arr[i], arr[j]));
+					hashMap.put(sum, list);
+				}else {
+					List<Pair> existing = hashMap.get(sum);
+					existing.add(new Pair(arr[i], arr[j]));
+					hashMap.put(sum, existing);	
+				}
+			}
+		}
+		
+		// Step 2 - Iterate the map and see if any key contains list with more than 2 elements. If yes, print app possible pairs.
+		printPairs(hashMap, false);
+	}
+	
+	private static void printPairs(Map<Integer, List<Pair>> hashMap, boolean muliply) {
+		Iterator<Entry<Integer, List<Pair>>> entryItr = hashMap.entrySet().iterator();
+		
+		while (entryItr.hasNext()) {
+			Map.Entry<Integer, List<Pair>> entry = entryItr.next();
+			int mul = entry.getKey();
+			List<Pair> list = entry.getValue();
+			
+			if(list.size()>=2) {
+				for (int i = 0; i < list.size() - 1; i++) {
+					System.out.println("****** Quartet for " + mul + " ******");
+					for (int j = i + 1; j < list.size(); j++) {
+						if (muliply)
+							System.out.println(list.get(i).first + "*" + list.get(i).second + " = " + list.get(j).first+ "*" + list.get(j).second);
+						else
+							System.out.println(list.get(i).first + "+" + list.get(i).second + " = " + list.get(j).first+ "+" + list.get(j).second);
+					}
+				}
+			}
+		}
+		
+	}
+	
+	/**
+	 * Description - Find four elements a, b, c and d in an array such that a*b = c*d. Print all possible quartet.
+	 * @param arr
+	 * @return
+	 */
+	public static void printPairsAmulBeqCmulD(int[] arr) {
+		// Step 1 - Create a map containing all pair list as value for a perticular sum as key.
+		Map<Integer, List<Pair>> hashMap = new HashMap<>();
+		for (int i = 0; i < arr.length-1; i++) {
+			for (int j = i+1; j < arr.length; j++) {
+				int mul=arr[i]*arr[j];
+				if(!hashMap.containsKey(mul)) {
+					List<Pair> list = new ArrayList<>();
+					list.add(new Pair(arr[i], arr[j]));
+					hashMap.put(mul, list);
+				}else {
+					List<Pair> existing = hashMap.get(mul);
+					existing.add(new Pair(arr[i], arr[j]));
+					hashMap.put(mul, existing);	
+				}
+			}
+		}
+		
+		// Step 2 - Iterate the map and see if any key contains list with more than 2 elements. If yes, print app possible pairs.
+		printPairs(hashMap, true);
+	}
+	/**
+	 * Description - Given an array of integers, find length of the largest subarray with sum equals to 0.
+	 * @param arr
+	 * @return
+	 */
+	public static int maxLengthZeroSumSubArray(int[] arr) {
+		int sum=0, max_len=0;
+		Map<Integer, Integer> hashMap =  new HashMap<>();
+		
+		for (int i = 0; i < arr.length; i++) {
+			sum += arr[i];
+			// If element is zero and max_len is zero also then  max_len = 1.
+			if(arr[i] == 0 && max_len == 0)
+				max_len = 1;
+			// If element is zero and max_len is equal to length of subarray from starting till this index (max).
+			if(sum == 0)
+				max_len = i+1;
+			
+			if(!hashMap.containsKey(sum)) {
+				hashMap.put(sum, i) ;
+			}else {
+				max_len = Math.max(max_len, i-hashMap.get(sum));
+			}
+		}
+		
+		return max_len;
+	}
+	
+	public static int largestConsecutiveSubSeq(int[] arr) {
+		int res=0;
+		Set<Integer> hashSet =  new HashSet<>();
+		for (int i = 0; i < arr.length; i++) {
+			hashSet.add(arr[i]);
+		}
+		
+		for (int i = 0; i < arr.length; i++) {
+			int temp=0;
+			if(!hashSet.contains(arr[i]-1)) {
+				temp++;
+				while(hashSet.contains(arr[i]+1))
+					temp++;
+			}
+			
+			res = Math.max(temp, res);
+		}
+		
+		return res;
+	}
 	public static void main(String[] args) {
 		/*Map<String, String> dataSet = new HashMap<String, String>();
         dataSet.put("Chennai", "Banglore");
@@ -109,7 +355,7 @@ public class IntermediateQ {
         dataSet.put("Goa", "Chennai");
         dataSet.put("Delhi", "Goa");
         
-        printStart2EndJourney(dataSet);*/
+        printStart2EndJourney(dataSet);
         
         Map<String, String> empMngrDataSet = new HashMap<String, String>();
         empMngrDataSet.put("A", "C");
@@ -123,5 +369,17 @@ public class IntermediateQ {
         
         int arr[] = { 92, 75, 65, 48, 45, 35 };
         System.out.println(isPairDivByK(arr, 10));
+        printPairDivByK(arr, 10);
+		
+		int abcdAddArr[] = {3, 4, 7, 1, 2, 9, 8};
+		//System.out.println(isPairsAplusBeqCplusD(abcdAddArr));
+		//System.out.println(isPairsAmulBeqCmulD(abcdAddArr));
+		
+		//printPairsAplusBeqCplusD(abcdAddArr);
+		printPairsAmulBeqCmulD(abcdAddArr);*/
+		
+		int zeroArr[] = {15, -2, 2, -8, 1, 7, 10, 23};
+		System.out.println(maxLengthZeroSumSubArray(zeroArr));
+		
 	}
 }
