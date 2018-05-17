@@ -348,7 +348,6 @@ public class IntermediateQ {
 		
 		return res;
 	}
-	
 	/**
 	 * Description - Given an array of size n and an integer k, return the of count
 	 * of distinct numbers in all windows of size k. Time Complexity - O(n) Input:
@@ -396,6 +395,174 @@ public class IntermediateQ {
 			i++;
 		}
 	}
+	/**
+	 * Description - Length of the largest subarray with contiguous elements | Set 1. Given an array of distinct integers, find length of the longest subarray which contains numbers that can be arranged in a continuous sequence.
+	 * Input:  arr[] = {10, 12, 11};
+	 * Output: Length of the longest contiguous subarray is 3
+	 * 
+	 * Input:  arr[] = {14, 12, 11, 20};
+	 * Output: Length of the longest contiguous subarray is 2
+	 * 
+	 * Input:  arr[] = {1, 56, 58, 57, 90, 92, 94, 93, 91, 45};
+	 * Output: Length of the longest contiguous subarray is 5
+	 * 
+	 * Time Complexity = O(n^2)
+	 * 
+	 * @param arr
+	 * @return
+	 */
+	public static int findLengthWithContigousElement(int[] arr) {
+		 /*Idea is to check for every possible subarray that difference between max and min of the array is equal to difference between start and end index.
+		 If yes the update max_len = Max of previous max_len and the diff+1.*/
+		int max_len = 1;
+		for (int i = 0; i < arr.length-1; i++) {
+			int min=arr[i], max=arr[i];
+			
+			for (int j = i+1; j < arr.length; j++) {
+				min=Math.min(min, arr[j]);
+				max=Math.max(max, arr[j]);
+				
+				if(max-min == j-i) {
+					max_len = Math.max(max_len, j-i+1);
+				}
+			}
+		}
+		
+		return max_len;
+	}
+	/**
+	 * Description - Length of the largest subarray with contiguous elements | Set 2. In the previous question, we have discussed a solution that assumes that elements in given array are distinct. Here we discuss a solution that works even if the input array has duplicates.
+	 * 
+	 * Input:  arr[] = {10, 12, 11};
+	 * Output: Length of the longest contiguous subarray is 3
+	 * 
+	 * Input:  arr[] = {10, 12, 12, 10, 10, 11, 10};Output: 
+	 * Length of the longest contiguous subarray is 2 
+	 * 
+	 * @param arr
+	 * @return
+	 */
+	public static int findLength(int[] arr) {
+		 /*Idea is to check for every possible subarray that difference between max and min of the array is equal to difference between start and end index.
+		 If yes the update max_len = Max of previous max_len and the diff+1.
+		 
+		 Duplicates are handled with the help of HashSet for every subarray.
+		 
+		 here the notion is every subarray should contain no contigous elements equal to the size.
+		 */
+		int max_len = 1;
+		for (int i = 0; i < arr.length-1; i++) {
+			HashSet<Integer> set = new HashSet<Integer>();
+			set.add(arr[i]);
+			
+			int min=arr[i], max=arr[i];
+			
+			for (int j = i+1; j < arr.length; j++) {
+				
+				if(set.contains(arr[j]))
+					break;
+				
+				set.add(arr[i]);
+				min=Math.min(min, arr[j]);
+				max=Math.max(max, arr[j]);
+				
+				if(max-min == j-i) {
+					max_len = Math.max(max_len, j-i+1);
+				}
+			}
+		}
+		
+		return max_len;
+	}
+	/**
+	 * Description - Given an array of positive and negative numbers, find if there is a subarray (of size at-least one) with 0 sum.
+	 * 
+	 * @param arr
+	 * @return
+	 */
+	public static boolean hasZeroSumSubArr(int[] arr) {
+		Set<Integer> hashSet = new HashSet<>();
+		int sum=0;
+		for (int i = 0; i < arr.length; i++) {
+			sum+=arr[i];
+			
+			// if either is case then subarray of zero sum exists.
+			if(arr[i] == 0 || sum==0 || hashSet.contains(sum)) {
+				return true;
+			}
+			
+			hashSet.add(sum);
+		}
+		
+		return false;
+	}
+	/**
+	 * Description - Print all subarrays with 0 sum.
+	 * @param arr
+	 */
+	public static void printAllZeroSubArr(int[] arr) {
+		Map<Integer, List<Integer>> hashMap = new HashMap<>();
+		int sum=0;
+		
+		for (int i = 0; i < arr.length; i++) {
+			sum+=arr[i];
+			List<Integer> list = null;
+			if(!hashMap.containsKey(sum)) {
+				list = new ArrayList<>();
+				list.add(i);
+				hashMap.put(sum, list);
+				
+				if(sum==0)
+					System.out.println("Zero Sum Sub Array (start, end) index :: (" +0+", "+i+")");
+			}else{
+				list = hashMap.get(sum);
+				
+				printCombination(list, i, 0);
+				
+				list.add(i);
+				hashMap.put(sum, list);
+			}
+				
+		}
+		
+	}
+	private static void printCombination(List<Integer> list, int i, int sum) {
+		for (Iterator<Integer> iterator = list.iterator(); iterator.hasNext();) {
+			Integer integer = (Integer) iterator.next();
+			if(sum==0)
+				System.out.println("Zero Sum Sub Array (start, end) index :: (" +(integer+1)+", "+i+")"); // Adding 1 to exclude the position of suming element.
+			else
+				System.out.println(sum+" Sum Sub Array (start, end) index :: (" +(integer+1)+", "+i+")");
+		}
+	}
+	/**
+	 * Description - Find subarray with given sum | Set 2 (Handles Negative Numbers). Given an unsorted array of integers, find a subarray which adds to a given number. If there are more than one subarrays with sum as the given number, print any of them.
+	 * @param arr
+	 * @param sum
+	 */
+	public static void printAllGivenSumSubArrWIthNegEle(int[] arr, int sum) {
+		HashMap<Integer, List<Integer>> hashMap = new HashMap<>();
+		int curr_sum=0;
+		for (int i = 0; i < arr.length; i++) {
+			curr_sum += arr[i];
+			
+			List<Integer> list = null;
+			if (!hashMap.containsKey(curr_sum-sum)) {
+				list = new ArrayList<>();
+				list.add(i);
+				hashMap.put(curr_sum, list);
+				if(curr_sum==sum)
+					System.out.println(sum+" Sum Sub Array (start, end) index :: (" +0+", "+i+")");
+			}else {
+				list = hashMap.get(curr_sum-sum);
+				printCombination(list, i, sum);
+				
+				list.add(i);
+				hashMap.put(curr_sum, list);
+			}
+			
+		}
+	}
 	public static void main(String[] args) {
 		/*Map<String, String> dataSet = new HashMap<String, String>();
         dataSet.put("Chennai", "Banglore");
@@ -427,11 +594,22 @@ public class IntermediateQ {
 		printPairsAmulBeqCmulD(abcdAddArr);
 		
 		int zeroArr[] = {15, -2, 2, -8, 1, 7, 10, 23};
-		System.out.println(maxLengthZeroSumSubArray(zeroArr));*/
+		System.out.println(maxLengthZeroSumSubArray(zeroArr));
 		
-		int arr[] =  {1, 2, 1, 3, 4, 2, 3};
-        int k = 4;
-        printDistinctInWindow(arr, k);
+		int windowArr[] =  {1, 2, 1, 3, 4, 2, 3};
+        printDistinctInWindow(windowArr, 4);
 		
+		int contArr[] = {1, 56, 58, 57, 90, 92, 94, 93, 91, 45};
+		System.out.println(findLengthWithContigousElement(contArr));
+		
+		int[] arrz={-3, 2, 3, 1, 6};//{4, 2, 0, 1, 6};//{4, 2, -3, 1, 6};
+		System.out.println(hasZeroSumSubArr(arrz));
+		
+		int[] arrzero = {6, 3, -1, -3, 4, -2, 2, 4, 6, -12, -7};
+		
+		printAllZeroSubArr(arr);*/
+		
+		int[] arr = {10, 2, -2, -20, 10};
+		printAllGivenSumSubArrWIthNegEle(arr, -10);
 	}
 }
