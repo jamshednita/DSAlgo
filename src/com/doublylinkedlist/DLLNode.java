@@ -1,13 +1,17 @@
 package com.doublylinkedlist;
 
-public class DNode {
+public class DLLNode {
 	
 	private int data;
-	private DNode left;
-	private DNode right;
+	private DLLNode left;
+	private DLLNode right;
 	
+	public DLLNode(int data) {
+		super();
+		this.data = data;
+	}
 	
-	public DNode(int data, DNode left, DNode right) {
+	public DLLNode(int data, DLLNode left, DLLNode right) {
 		super();
 		this.data = data;
 		this.left = left;
@@ -20,16 +24,16 @@ public class DNode {
 	public void setData(int data) {
 		this.data = data;
 	}
-	public DNode getLeft() {
+	public DLLNode getLeft() {
 		return left;
 	}
-	public void setLeft(DNode left) {
+	public void setLeft(DLLNode left) {
 		this.left = left;
 	}
-	public DNode getRight() {
+	public DLLNode getRight() {
 		return right;
 	}
-	public void setRight(DNode right) {
+	public void setRight(DLLNode right) {
 		this.right = right;
 	}
 	
@@ -51,7 +55,7 @@ public class DNode {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DNode other = (DNode) obj;
+		DLLNode other = (DLLNode) obj;
 		if (data != other.data)
 			return false;
 		if (left == null) {

@@ -2,8 +2,8 @@ package com.doublylinkedlist;
 
 public class DoublyLinkedList {
 	
-	DNode head;
-	DNode end;
+	DLLNode head;
+	DLLNode end;
 	int size;
 	
 	public DoublyLinkedList() {
@@ -14,8 +14,8 @@ public class DoublyLinkedList {
 	}
 	
 	public void insertAtPosition(int data, int position){
-		DNode ptr=this.head, temp=null;
-		DNode newNode=new DNode(data, null, null);
+		DLLNode ptr=this.head, temp=null;
+		DLLNode newNode=new DLLNode(data, null, null);
 		
 		if(position>size || position<1){
 			System.out.println("Incorrect position OR there is less node in the list");

@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+
+import com.binarytree.Node;
+import com.doublylinkedlist.DLLNode;
 
 public class IntermediateQ {
 	
@@ -563,6 +567,58 @@ public class IntermediateQ {
 			
 		}
 	}
+	/**
+	 * Description - Vertical Sum in a given Binary Tree | Set 1. (HashMap based solution)
+	 * @param root
+	 */
+	public static void treeVerticalSum(Node root) {
+		Map<Integer, Integer> sumMap = new TreeMap<>();
+		
+		treeVerticalSumUtil(sumMap, 0, root);
+		
+		System.out.println(sumMap);
+	}
+	private static void treeVerticalSumUtil(Map<Integer, Integer> sumMap, int vericalPos, Node root) {
+		if(root == null)
+			return;
+		
+		treeVerticalSumUtil(sumMap, vericalPos-1, root.getLeft());
+		
+		int existingSum = (sumMap.containsKey(vericalPos)?sumMap.get(vericalPos):0);
+		existingSum += root.getData();
+		sumMap.put(vericalPos, existingSum);
+		
+		treeVerticalSumUtil(sumMap, vericalPos+1, root.getRight());
+	}
+	
+	/**
+	 * Description - Vertical Sum in a given Binary Tree | Set 2. (Space Efficient LinkedList based solution)
+	 * @param root
+	 */
+	public static void treeVerticalSumLL(Node root) {
+		DLLNode dllnode= new DLLNode(0);
+		treeVerticalSumLLUtil(dllnode, root);
+		
+		System.out.println(dllnode);
+	}
+	private static void treeVerticalSumLLUtil(DLLNode dllnode, Node root) {
+		if(root == null)
+			return;
+		
+		if(root.getRight()!=null && dllnode.getRight()==null) {
+			dllnode.setRight(new DLLNode(0));
+			dllnode.getRight().setLeft(dllnode);
+		}
+		treeVerticalSumLLUtil(dllnode.getRight(), root.getRight());
+		
+		dllnode.setData(dllnode.getData()+root.getData());
+		
+		if(root.getLeft()!=null && dllnode.getLeft()==null) {
+			dllnode.setLeft(new DLLNode(0));
+			dllnode.getLeft().setRight(dllnode);
+		}
+		treeVerticalSumLLUtil(dllnode.getLeft(), root.getLeft());
+	}
 	public static void main(String[] args) {
 		/*Map<String, String> dataSet = new HashMap<String, String>();
         dataSet.put("Chennai", "Banglore");
@@ -607,9 +663,20 @@ public class IntermediateQ {
 		
 		int[] arrzero = {6, 3, -1, -3, 4, -2, 2, 4, 6, -12, -7};
 		
-		printAllZeroSubArr(arr);*/
+		printAllZeroSubArr(arr);
 		
 		int[] arr = {10, 2, -2, -20, 10};
-		printAllGivenSumSubArrWIthNegEle(arr, -10);
+		printAllGivenSumSubArrWIthNegEle(arr, -10);*/
+		
+		Node root = new Node(1);
+        root.setLeft(new Node(2));
+        root.setRight(new Node(3));
+        root.getLeft().setLeft(new Node(4));
+        root.getLeft().setRight(new Node(5));
+        root.getRight().setLeft(new Node(6));
+        root.getRight().setRight(new Node(7));
+		
+        //treeVerticalSum(root);
+        treeVerticalSumLL(root);
 	}
 }
