@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -658,6 +659,55 @@ public class IntermediateQ {
 		
 		return shifted;
 	}
+	
+	/**
+	 * Description - Given a string str and Q queries. Each query contains a pair of integers (i1, i2) and a character ‘ch’. We need to replace characters at indexes i1 and i2 with new character ‘ch’ and then tell if string str is palindrome or not. (0 <= i1, i2 < string_length).
+	 * @param initString
+	 * @param noOfQueries
+	 */
+	public static void palindromeCheckAfterQuery(String initString, int noOfQueries) {
+		if(initString == null || initString.isEmpty()) {
+			System.err.println("Invalid String Input !");
+			return;
+		}
+		Scanner sc = null;
+		StringBuffer buff = new StringBuffer(initString);
+		for (int i = 0; i < noOfQueries; i++) {
+			if(sc == null)
+				sc = new Scanner(System.in);
+			
+			System.out.print("Query "+i+" : i1=");
+			int i1 = sc.nextInt();
+			
+			System.out.print(" , i2=");
+			int i2 = sc.nextInt();
+			
+			System.out.print(" , ch=");
+			char ch = sc.next().charAt(0);
+			
+			
+			if(i1<0 || i1>=initString.length() || i2<0 || i2>=initString.length()) {
+				System.err.println("Invalid Query Range !");
+				return;
+			}else {
+				buff.setCharAt(i1, ch);
+				buff.setCharAt(i2, ch);
+			}
+			
+			System.out.print(" :: ANS="+(isPalindrome(buff.toString())?"YES":"NO"));
+			System.out.println();// Move cursor next line
+		}
+		
+	}
+	private static boolean isPalindrome(String str) {
+		int end = str.length()-1;
+		for (int start = 0; start < str.length()/2; start++) {
+			if(str.charAt(start) != str.charAt(end-start))
+				return false;
+		}
+		
+		return true;
+	}
 	public static void main(String[] args) {
 		/*Map<String, String> dataSet = new HashMap<String, String>();
         dataSet.put("Chennai", "Banglore");
@@ -716,10 +766,22 @@ public class IntermediateQ {
         root.getRight().setRight(new Node(7));
 		
         //treeVerticalSum(root);
-        treeVerticalSumLL(root);*/
+        treeVerticalSumLL(root);
 		
 		//System.out.println(getGroup("mop"));
 		String[] strArr = {"acd", "dfg", "wyz", "yab", "mop","bdfh", "a", "x", "moqs"};
-		groupShiftedString(strArr);
+		groupShiftedString(strArr);*/
+		
+		/*Scanner scan=new Scanner(System.in);
+		
+		for (int i = 0; i < 2; i++) {
+			System.out.println("Enter first position to be replaced");
+			int first = scan.nextInt();
+			System.out.println(first);
+			System.out.println("Enter second position to be replaced");
+			int second = scan.nextInt();
+			System.out.println(second);
+		}*/
+		palindromeCheckAfterQuery("geeks", 2);
 	}
 }
