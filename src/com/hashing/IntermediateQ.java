@@ -619,6 +619,45 @@ public class IntermediateQ {
 		}
 		treeVerticalSumLLUtil(dllnode.getLeft(), root.getLeft());
 	}
+	/**
+	 * Description - Given an array of strings (all lowercase letters), the task is to group them in such a way that all strings in a group are shifted versions of each other. Two string S and T are called shifted if,
+	 * S.length = T.length 
+	 * and S[i] = T[i] + K for 1 <= i <= S.length  for a constant integer K. For example strings {acd, dfg, wyz, yab, mop} are shifted versions of each other.
+	 * @param strArr
+	 */
+	public static void groupShiftedString(String[] strArr) {
+		HashMap<String,List<String>> map = new HashMap<>();
+		
+		for (int i = 0; i < strArr.length; i++) {
+			String group = getGroup(strArr[i]);
+			
+			List<String> existingList = null;
+			if(map.containsKey(group)) {
+				existingList = map.get(group);
+			}else {
+				existingList = new ArrayList<>();
+			}
+			
+			existingList.add(strArr[i]);
+			map.put(group, existingList);
+		}
+		
+		System.out.println(map);
+	}
+	private static String getGroup(String str) {
+		String shifted="";
+		int ALPHA=26;
+		for (int i = 1; i < str.length(); i++) {
+			int diff=(str.charAt(i)-str.charAt(i-1));
+			
+			if(diff<0)
+				diff=(diff+ALPHA);
+			
+			shifted+=(char)(diff+'a');
+		}
+		
+		return shifted;
+	}
 	public static void main(String[] args) {
 		/*Map<String, String> dataSet = new HashMap<String, String>();
         dataSet.put("Chennai", "Banglore");
@@ -666,7 +705,7 @@ public class IntermediateQ {
 		printAllZeroSubArr(arr);
 		
 		int[] arr = {10, 2, -2, -20, 10};
-		printAllGivenSumSubArrWIthNegEle(arr, -10);*/
+		printAllGivenSumSubArrWIthNegEle(arr, -10);
 		
 		Node root = new Node(1);
         root.setLeft(new Node(2));
@@ -677,6 +716,10 @@ public class IntermediateQ {
         root.getRight().setRight(new Node(7));
 		
         //treeVerticalSum(root);
-        treeVerticalSumLL(root);
+        treeVerticalSumLL(root);*/
+		
+		//System.out.println(getGroup("mop"));
+		String[] strArr = {"acd", "dfg", "wyz", "yab", "mop","bdfh", "a", "x", "moqs"};
+		groupShiftedString(strArr);
 	}
 }
