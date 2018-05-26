@@ -142,6 +142,28 @@ public class IntroDFSnBFSQ {
 		stack.push(v);
 	}
 
+	public static int motherVertex(Graph graph) {
+		boolean[] visited = new boolean[graph.getV()];
+		
+		int lastVisited=-1; // In DFS of directed graph last visited node is one of the mother vertices.
+		
+		for (int u = 0; u < visited.length; u++) {
+			if(!visited[u]) {
+				DFSUtil(graph, u, visited);
+				lastVisited = u;
+			}	
+		}
+		
+		visited = new boolean[graph.getV()]; // to set all element to false
+		
+		DFSUtil(graph, lastVisited, visited);
+		
+		for (int i = 0; i < visited.length; i++) {
+			if(!visited[i])
+				return -1;
+		}
+		return lastVisited;
+	}
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -164,7 +186,7 @@ public class IntroDFSnBFSQ {
 		
 		//BFS(dirGraph, 2);
 		DFS(dirGraph, 2);*/
-		WeightedGraph wG = new WeightedGraph(6);
+		/*WeightedGraph wG = new WeightedGraph(6);
 		
 		wG.addDirectedEdge(0, 1, 5);
 		wG.addDirectedEdge(0, 2, 3);
@@ -177,7 +199,19 @@ public class IntroDFSnBFSQ {
 		wG.addDirectedEdge(3, 4, -1);
 		wG.addDirectedEdge(4, 5, -2);
 		
-		longestPathInDAG(wG, 1);
+		longestPathInDAG(wG, 1);*/
+		
+		Graph mGraph = new Graph(7);
+		mGraph.addDirectedEdge(0, 1);
+		mGraph.addDirectedEdge(0, 2);
+		mGraph.addDirectedEdge(1, 3);
+		mGraph.addDirectedEdge(4, 1);
+		mGraph.addDirectedEdge(6, 4);
+		mGraph.addDirectedEdge(5, 6);
+		mGraph.addDirectedEdge(5, 2);
+		mGraph.addDirectedEdge(6, 0);
+		
+		System.out.println("Mother Vertex :: "+motherVertex(mGraph));
 	}
 
 }
