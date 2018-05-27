@@ -164,6 +164,38 @@ public class IntroDFSnBFSQ {
 		}
 		return lastVisited;
 	}
+	
+	public static void transitiveClosure(Graph graph) {
+		boolean[][] tc = new boolean[graph.getV()][graph.getV()];
+		
+		for (int i = 0; i < graph.getV(); i++) {
+			transitiveClosureUtilDFS(graph, i, i, tc);
+		}
+		
+		for (int i = 0; i < graph.getV(); i++)  {
+			for (int j = 0; j < graph.getV(); j++) {
+				int val = (tc[i][j]?1:0);
+				System.out.print(val + " ");
+			}
+			System.out.println();
+		}
+	}
+	
+	private static void transitiveClosureUtilDFS(Graph graph, int u, int v, boolean[][] tc) {
+		tc[u][v]=true;
+		// Adjecency list iterator.
+		Iterator<Integer> adListItr = graph.getAdjListArr()[v].iterator();
+		
+		while (adListItr.hasNext()) {
+			Integer vi = (Integer) adListItr.next();
+			
+			if (!tc[u][vi]) {
+				transitiveClosureUtilDFS(graph, u, vi, tc);
+			}
+			
+		}
+	}
+
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -201,7 +233,7 @@ public class IntroDFSnBFSQ {
 		
 		longestPathInDAG(wG, 1);*/
 		
-		Graph mGraph = new Graph(7);
+		/*Graph mGraph = new Graph(7);
 		mGraph.addDirectedEdge(0, 1);
 		mGraph.addDirectedEdge(0, 2);
 		mGraph.addDirectedEdge(1, 3);
@@ -211,7 +243,17 @@ public class IntroDFSnBFSQ {
 		mGraph.addDirectedEdge(5, 2);
 		mGraph.addDirectedEdge(6, 0);
 		
-		System.out.println("Mother Vertex :: "+motherVertex(mGraph));
+		System.out.println("Mother Vertex :: "+motherVertex(mGraph));*/
+		
+		Graph tcGraph = new Graph(4);
+		tcGraph.addDirectedEdge(0, 1);
+		tcGraph.addDirectedEdge(0, 2);
+		tcGraph.addDirectedEdge(1, 2);
+		tcGraph.addDirectedEdge(2, 0);
+		tcGraph.addDirectedEdge(2, 3);
+		tcGraph.addDirectedEdge(3, 3);
+		
+		transitiveClosure(tcGraph);
 	}
 
 }
