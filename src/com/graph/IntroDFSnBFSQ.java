@@ -141,7 +141,12 @@ public class IntroDFSnBFSQ {
 		
 		stack.push(v);
 	}
-
+	
+	/**
+	 * Description - Find a Mother Vertex in a Graph. A mother vertex in a graph G = (V,E) is a vertex v such that all other vertices in G can be reached by a path from v. Time Complexity : O(V + E).
+	 * @param graph
+	 * @return
+	 */
 	public static int motherVertex(Graph graph) {
 		boolean[] visited = new boolean[graph.getV()];
 		
@@ -165,6 +170,11 @@ public class IntroDFSnBFSQ {
 		return lastVisited;
 	}
 	
+	/**
+	 * Description - Transitive Closure of a Graph using DFS. Given a directed graph, find out if a vertex v is reachable from another vertex u for all vertex pairs (u, v) in the given graph. Here reachable mean that there is a path from vertex u to v. The reach-ability matrix is called transitive closure of a graph.
+	 * Time Complexity = O(V2)
+	 * @param graph
+	 */
 	public static void transitiveClosure(Graph graph) {
 		boolean[][] tc = new boolean[graph.getV()][graph.getV()];
 		
@@ -193,6 +203,99 @@ public class IntroDFSnBFSQ {
 				transitiveClosureUtilDFS(graph, u, vi, tc);
 			}
 			
+		}
+	}
+	/**
+	 * Description - Find k-cores of an undirected graph. Given a graph G and an integer K, K-cores of the graph are connected components that are left after all vertices of degree less than k have been removed.
+	 * @param g
+	 * @param k
+	 */
+	public static void printKCores(Graph g, int k) {
+		boolean[] visited = new boolean[g.getV()];
+		int[] degree = new int[g.getV()];
+		
+		int startVertex=0, min_deg=Integer.MAX_VALUE;
+		
+		for (int i = 0; i < degree.length; i++) {
+			degree[i] = g.getAdjListArr()[i].size();
+			if(min_deg>degree[i]) {
+				min_deg=degree[i];
+				startVertex=i;
+			}
+		}
+		// Update the degree of vertices starting from least degree vertex.
+		printKCoresDFSUtil(startVertex, g, visited, degree, k);
+		
+		for (int i = 0; i < g.getV(); i++) {
+			if(!visited[i])
+				printKCoresDFSUtil(i, g, visited, degree, k);
+		}
+		// Print K-Cores
+		for (int i = 0; i < g.getV(); i++) {
+			if(degree[i]>=k) {
+				System.out.print(i);
+				Iterator<Integer> vi = g.getAdjListArr()[i].iterator();
+				while(vi.hasNext()) {
+					Integer v = vi.next();
+					
+					if(degree[v]>=k) {
+						System.out.print("->"+v);
+					}
+				}
+			}
+			System.out.println();// NEW_LINE
+		}
+	}
+	private static boolean printKCoresDFSUtil(int u, Graph g, boolean[] visited, int[] degree, int k) {
+		visited[u]=true;
+		
+		Iterator<Integer> vi = g.getAdjListArr()[u].iterator();
+		while(vi.hasNext()) {
+			int v = vi.next();
+			
+			if(degree[u]<k)
+				degree[v]=degree[v]-1;
+			
+			if(!visited[v]) {
+				if(printKCoresDFSUtil(v, g, visited, degree, k))
+					degree[u]=degree[u]-1;
+			}
+		}
+		
+		return (degree[u]<k);
+	}
+	
+	/**
+	 * Description - Iterative Depth First Traversal of Graph. Time Complexity = O(E+V)
+	 * @param dirG
+	 * @param start
+	 */
+	public static void iterativeDFS(Graph dirG, int start) {
+		boolean[] visited = new boolean[dirG.getV()];
+		/*for (int j = 0; j < visited.length; j++) {
+			if (!visited[j]) {
+				iterativeDFSUtil(j, dirG, visited);
+			}
+		}*/
+		iterativeDFSUtil(start, dirG, visited); // This lists out all vertices reachable from start node. There might be some vertices not reachable from this. So for complete DFS above for loop cab be used.
+	}
+
+	private static void iterativeDFSUtil(int u, Graph dirG, boolean[] visited) {
+		visited[u]=true;
+		Stack<Integer> stack = new Stack<>();
+		stack.push(u);
+		
+		while(!stack.isEmpty()) {
+			int topVertex = stack.pop();
+			visited[topVertex] = true;
+			System.out.print(topVertex+" ");
+			
+			Iterator<Integer> adjListItr = dirG.getAdjListArr()[topVertex].iterator();
+			while(adjListItr.hasNext()) {
+				int v = adjListItr.next();
+				if(!visited[v])
+					stack.push(v);
+			}
 		}
 	}
 
@@ -245,7 +348,7 @@ public class IntroDFSnBFSQ {
 		
 		System.out.println("Mother Vertex :: "+motherVertex(mGraph));*/
 		
-		Graph tcGraph = new Graph(4);
+		/*Graph tcGraph = new Graph(4);
 		tcGraph.addDirectedEdge(0, 1);
 		tcGraph.addDirectedEdge(0, 2);
 		tcGraph.addDirectedEdge(1, 2);
@@ -253,7 +356,37 @@ public class IntroDFSnBFSQ {
 		tcGraph.addDirectedEdge(2, 3);
 		tcGraph.addDirectedEdge(3, 3);
 		
-		transitiveClosure(tcGraph);
+		transitiveClosure(tcGraph);*/
+		
+		/*Graph gk = new Graph(9);
+		gk.addUnDirectedEdge(0, 1);
+		gk.addUnDirectedEdge(0, 2);
+		gk.addUnDirectedEdge(1, 2);
+		gk.addUnDirectedEdge(1, 5);
+		gk.addUnDirectedEdge(2, 3);
+		gk.addUnDirectedEdge(2, 4);
+		gk.addUnDirectedEdge(2, 5);
+		gk.addUnDirectedEdge(2, 6);
+		gk.addUnDirectedEdge(3, 4);
+		gk.addUnDirectedEdge(3, 6);
+		gk.addUnDirectedEdge(3, 7);
+		gk.addUnDirectedEdge(4, 6);
+		gk.addUnDirectedEdge(4, 7);
+		gk.addUnDirectedEdge(5, 6);
+		gk.addUnDirectedEdge(5, 8);
+		gk.addUnDirectedEdge(6, 7);
+		gk.addUnDirectedEdge(6, 8);
+		printKCores(gk, 3);*/
+		
+		Graph g = new Graph(5);
+		g.addDirectedEdge(1, 0);
+		g.addDirectedEdge(2, 1);
+		g.addDirectedEdge(3, 4);
+		g.addDirectedEdge(4, 0);
+		g.addDirectedEdge(0, 3);
+		g.addDirectedEdge(0, 2);
+		
+		iterativeDFS(g, 0);
 	}
 
 }
