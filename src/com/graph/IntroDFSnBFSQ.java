@@ -299,6 +299,79 @@ public class IntroDFSnBFSQ {
 		}
 	}
 
+	/**
+	 * Description - Time Complexity = O(E+V). Count the number of nodes at given level in a tree using BFS. Given a tree represented as undirected graph. Count the number of nodes at given level l. It may be assumed that vertex 0 is root of the tree.
+	 * @param unDirG - A undirected graph representing n-ary tree.
+	 * @param l - Level at which count has to be count and returned.
+	 * @param rootVertex - Root vertex of the n-ary tree represented by the graph.
+	 * @return - count of the nodes at that level.
+	 */
+	public static int countVerticesAtLevel(Graph unDirG, int l, int rootVertex) {
+		boolean[] visited = new boolean[unDirG.getV()];
+		int[] level = new int[unDirG.getV()];
+		
+		List<Integer> queue = new ArrayList<>();
+		queue.add(rootVertex);
+		level[rootVertex] = 0;
+		visited[rootVertex]=true;
+		
+		while (!queue.isEmpty()) {
+			int parent = queue.remove(0); // ENQUEUE
+			
+			Iterator<Integer> adjListItr = unDirG.getAdjListArr()[parent].iterator();
+			
+			while (adjListItr.hasNext()) {
+				Integer child = (Integer) adjListItr.next();
+				
+				if(!visited[child]) {
+					queue.add(child);
+					visited[child]=true;
+					
+					level[child] = level[parent]+1;
+				}
+			}
+		}
+		int count =0;
+		for (int i = 0; i < level.length; i++) {
+			if(level[i]==l)
+				count++;
+		}
+		
+		return count;
+	}
+	/**
+	 * Description - Time Complexity = O(E+V). Count all possible paths between two vertices. Count the total number of ways or paths that exist between two vertices in a directed graph. These paths doesn’t contain a cycle, the simple enough reason is that a cylce contain infinite number of paths and hence they create problem.
+	 * @param DAG - Directed Acyclic Graph
+	 * @param start - start vertex of the path
+	 * @param end - end vertex of the path
+	 * @return - count of all possible paths.
+	 */
+	public static int countPath(Graph DAG, int start, int end) {
+		boolean[] visited = new boolean[DAG.getV()];
+		CustSum cSum = (new IntroDFSnBFSQ()).new CustSum();
+		countPathDFSUtil(DAG,start,end,visited, cSum);
+		
+		return cSum.sum;
+	}
+	private static void countPathDFSUtil(Graph dAG, int u, int end, boolean[] visited, CustSum s) {
+		
+		visited[u] = true;
+		
+		Iterator<Integer> vi = dAG.getAdjListArr()[u].iterator();
+		
+		while (vi.hasNext()) {
+			Integer v = (Integer) vi.next();
+			
+			if(!visited[v]) {
+				if(v==end) {
+					s.sum++;
+				}
+				countPathDFSUtil(dAG, v, end, visited, s);
+			}
+		}
+		visited[u]=false;
+	}
+
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -378,7 +451,7 @@ public class IntroDFSnBFSQ {
 		gk.addUnDirectedEdge(6, 8);
 		printKCores(gk, 3);*/
 		
-		Graph g = new Graph(5);
+		/*Graph g = new Graph(5);
 		g.addDirectedEdge(1, 0);
 		g.addDirectedEdge(2, 1);
 		g.addDirectedEdge(3, 4);
@@ -386,7 +459,30 @@ public class IntroDFSnBFSQ {
 		g.addDirectedEdge(0, 3);
 		g.addDirectedEdge(0, 2);
 		
-		iterativeDFS(g, 0);
+		iterativeDFS(g, 0);*/
+		
+		/*Graph nAryTreeUnDG = new Graph(6);
+		nAryTreeUnDG.addUnDirectedEdge(0, 1);
+		nAryTreeUnDG.addUnDirectedEdge(0, 2);
+		nAryTreeUnDG.addUnDirectedEdge(1, 3);
+		nAryTreeUnDG.addUnDirectedEdge(2, 4);
+		nAryTreeUnDG.addUnDirectedEdge(2, 5);
+		
+		System.out.println(countVerticesAtLevel(nAryTreeUnDG, 2, 0));*/
+		
+		Graph g = new Graph(4);
+		g.addDirectedEdge(0, 1);
+		g.addDirectedEdge(0, 2);
+		g.addDirectedEdge(0, 3);
+		g.addDirectedEdge(2, 0);
+		g.addDirectedEdge(2, 1);
+		g.addDirectedEdge(1, 3);
+		
+		System.out.println(countPath(g, 2, 3));
+	}
+	
+	class CustSum{
+		int sum=0;
 	}
 
 }
