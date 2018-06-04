@@ -373,6 +373,53 @@ public class IntroDFSnBFSQ {
 		visited[u]=false;
 	}
 
+	public static int sortestPathInPrimes(int n1, int n2) {
+		List<Integer> primes = sieveOfEratosthenes(n1, 9999);
+		
+		Graph dirG = new Graph(primes.size());
+		
+		for(int i=0; i<primes.size(); i++) {
+			for (int j = i+1; j < primes.size(); j++) {
+				if(compare(primes.get(i), primes.get(j)))
+					dirG.addDirectedEdge(i, j);
+			}
+		}
+		
+		// Perform DFS to find out sotest path.
+		
+		return 0;
+	}
+	private static boolean compare(Integer num1, Integer num2) {
+		String n1 = num1.toString();
+		String n2 = num2.toString();
+		
+		int count = 0;
+		for (int i = 0; i < n1.length(); i++) {
+			if(n1.charAt(i)!=n2.charAt(i))
+				count++;
+		}
+		
+		return (count==1?true:false);
+	}
+
+	private static List<Integer> sieveOfEratosthenes(int start, int max) {
+		List<Integer> primes = new ArrayList<>();
+		
+		boolean[] nonPrimes = new boolean[max+1];
+		
+		for(int p=2; p*p<=max; p++) {
+			for(int i=p*p; i<=max; i+=p)
+				nonPrimes[i]=true;
+		}
+		
+		for (int i = start; i <=max; i++) {
+			if(!nonPrimes[i])
+				primes.add(i);
+		}
+		
+		return primes;
+	}
+
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
