@@ -1,10 +1,15 @@
 package com.graph;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Stack;
+import java.util.Vector;
 
 public class IntroDFSnBFSQ {
 	/**
@@ -299,7 +304,6 @@ public class IntroDFSnBFSQ {
 			}
 		}
 	}
-
 	/**
 	 * Description - Time Complexity = O(E+V). Count the number of nodes at given level in a tree using BFS. Given a tree represented as undirected graph. Count the number of nodes at given level l. It may be assumed that vertex 0 is root of the tree.
 	 * @param unDirG - A undirected graph representing n-ary tree.
@@ -366,28 +370,72 @@ public class IntroDFSnBFSQ {
 			if(!visited[v]) {
 				if(v==end) {
 					s.sum++;
-				}
-				countPathDFSUtil(dAG, v, end, visited, s);
+				}else
+					countPathDFSUtil(dAG, v, end, visited, s);
 			}
 		}
 		visited[u]=false;
 	}
 
-	public static int sortestPathInPrimes(int n1, int n2) {
+	/**
+	 * Description - 
+	 * @param n1
+	 * @param n2
+	 * @return
+	 */
+	public static int shortestPathInPrimes(int n1, int n2) {
+		if(n1==n2)
+			return 0;
+		
 		List<Integer> primes = sieveOfEratosthenes(n1, 9999);
 		
-		Graph dirG = new Graph(primes.size());
+		Graph dAG = new Graph(primes.size()); // This graph contains index as vertex instead of actual prime no.
 		
 		for(int i=0; i<primes.size(); i++) {
 			for (int j = i+1; j < primes.size(); j++) {
 				if(compare(primes.get(i), primes.get(j)))
-					dirG.addDirectedEdge(i, j);
+					dAG.addUnDirectedEdge(i, j); // It's not working with Directed Graph. Which always have parent greater than child.
 			}
 		}
 		
-		// Perform DFS to find out sotest path.
+		int shortestPath = calculateShortestPath(dAG, primes, n2);
 		
-		return 0;
+		return shortestPath;
+	}
+	private static int calculateShortestPath(Graph dAG, List<Integer> primes, int n2) {
+		// Perform BFS to find out shortest path.
+		List<Integer> bfsQueue = new ArrayList<>();
+		//int[] visited = new int[primes.size()];
+		boolean[] visited = new boolean[primes.size()]; // we have to keep track of all visited nodes else will end up in endless loop processing same vertex again n again.
+		bfsQueue.add(0);
+		
+		//visited[0]=1;
+		visited[0]=true;
+		int count = 0;
+		
+		while (!bfsQueue.isEmpty()) {
+			int sizeAtThisLevel = bfsQueue.size();
+			count++;
+			for (int i = 0; i < sizeAtThisLevel; i++) {
+				int u = bfsQueue.remove(0);
+				Iterator<Integer> vi = dAG.getAdjListArr()[u].iterator();
+				
+				while (vi.hasNext()) {
+					int v = (Integer) vi.next();
+					if(!visited[v]/*visited[v]==0*/) {
+						visited[v]=true;
+						bfsQueue.add(v);
+					}
+
+					if (n2==primes.get(v)) {
+						System.out.println("*******OUTPUT******");
+						return count;
+					}
+				}
+			}
+
+		}
+		return -1;
 	}
 	private static boolean compare(Integer num1, Integer num2) {
 		String n1 = num1.toString();
@@ -401,7 +449,6 @@ public class IntroDFSnBFSQ {
 		
 		return (count==1?true:false);
 	}
-
 	private static List<Integer> sieveOfEratosthenes(int start, int max) {
 		List<Integer> primes = new ArrayList<>();
 		
@@ -419,7 +466,154 @@ public class IntroDFSnBFSQ {
 		
 		return primes;
 	}
+	/**
+	 * Description - Water Jug problem using BFS
+					You are given a m litre jug and a n litre jug . Both the jugs are initially empty. The jugs don’t have markings to allow measuring smaller quantities. You have to use the jugs to measure d litres of water where d is less than n.
+					(X, Y) corresponds to a state where X refers to amount of water in Jug1 and Y refers to amount of water in Jug2
+					Determine the path from initial state (xi, yi) to final state (xf, yf), where (xi, yi) is (0, 0) which indicates both Jugs are initially empty and (xf, yf) indicates a state which could be (0, d) or (d, 0).
 
+					The operations you can perform are:
+
+					1. Empty a Jug, (X, Y)->(0, Y) Empty Jug 1
+					2. Fill a Jug, (0, 0)->(X, 0) Fill Jug 1
+					3. Pour water from one jug to the other until one of the jugs is either empty or full, (X, Y) -> (X-d, Y+d)
+	 * @param a - capacity of Jug1 in liters.
+	 * @param b - capacity of Jug2 in liters.
+	 * @param target - target water in liters.
+	 */
+	public void twoJugWaterProblemBFS(int a, int b, int target)
+	{
+	    // Map is used to store the states, every
+	    // state is hashed to binary value to 
+	    // indicate either that state is visited 
+	    // before or not
+	    Map<Pair, Integer> m = new HashMap<>();
+	    boolean isSolvable = false;
+	    Vector<Pair> path = new Vector<>();
+	 
+	    List<Pair> q = new ArrayList<>(); // queue to maintain states
+	    q.add(new Pair(0,0)); // Initialing with initial state
+	 
+	    while (!q.isEmpty()) {
+	 
+	        Pair u = q.get(0); // current state
+	 
+	        q.remove(0); // pop off used state
+	 
+	        // if this state is already visited
+	        if (m.get(new Pair( u.first, u.second ))!=null && m.get(new Pair( u.first, u.second ))== 1)
+	            continue;
+	 
+	        // doesn't met jug constraints
+	        if ((u.first > a || u.second > b ||
+	            u.first < 0 || u.second < 0))
+	            continue;
+	 
+	        // filling the vector for constructing
+	        // the solution path
+	        path.add(new Pair( u.first, u.second ));
+	 
+	        // marking current state as visited
+	        m.put(new Pair( u.first, u.second ), 1);
+	 
+	        // if we reach solution state, put ans=1
+	        if (u.first == target || u.second == target) {
+	            isSolvable = true;
+	            if (u.first == target) {
+	                if (u.second != 0)
+	 
+	                    // fill final state
+	                    path.add(new Pair( u.first, 0 ));
+	            }
+	            else {
+	                if (u.first != 0)
+	 
+	                    // fill final state
+	                    path.add(new Pair( 0, u.second ));
+	            }
+	 
+	            // print the solution path
+	            int sz = path.size();
+	            for (int i = 0; i < sz; i++)
+	            	System.out.println("("+path.get(i).first+", "+path.get(i).second+")");
+	            break;
+	        }
+	 
+	        // if we have not reached final state 
+	        // then, start developing intermediate 
+	        // states to reach solution state
+	        q.add(new Pair( u.first, b )); // fill Jug2
+	        q.add(new Pair( a, u.second )); // fill Jug1
+	 
+	        for (int ap = 0; ap <= Math.max(a, b); ap++) {
+	 
+	            // pour amount ap from Jug2 to Jug1
+	            int c = u.first + ap;
+	            int d = u.second - ap;
+	 
+	            // check if this state is possible or not
+	            if (c == a || (d == 0 && d >= 0))
+	                q.add(new Pair( c, d ));
+	 
+	            // Pour amount ap from Jug 1 to Jug2
+	            c = u.first - ap;
+	            d = u.second + ap;
+	 
+	            // check if this state is possible or not
+	            if ((c == 0 && c >= 0) || d == b)
+	                q.add(new Pair( c, d ));
+	        }
+	 
+	        q.add(new Pair( a, 0 )); // Empty Jug2
+	        q.add(new Pair( 0, b )); // Empty Jug1
+	    }
+	 
+	    // No, solution exists if ans=0
+	    if (!isSolvable)
+	       System.err.println("No solution");  
+	}
+	/**
+	 * Description - Count number of trees in a forest. Given n nodes of a forest (collection of trees), find the number of trees in the forest.
+	 * 
+	 * Input :  edges[] = {0, 1}, {0, 2}, {3, 4}
+	   Output : 2
+       Explanation : There are 2 trees
+                   0       3
+                  / \       \
+                 1   2       4
+	 * 
+	 * @param adjList
+	 * @param V
+	 * @return
+	 */
+	public static int countNoOfTrees(Vector<Integer>[] adjList, int V) {
+		int count=0;
+		boolean[] visited = new boolean[V];
+		
+		for (int i = 0; i < V; i++) {
+			if(!visited[i]) {
+				DFSTreeForestCount(visited, adjList, i);
+				count++;
+			}
+		}
+		
+		return count;
+	}
+	private static void DFSTreeForestCount(boolean[] visited, Vector<Integer>[] adjList, int i) {
+		visited[i]=true;
+		
+		Iterator<Integer> vi = adjList[i].iterator();
+		
+		while (vi.hasNext()) {
+			Integer v = (Integer) vi.next();
+			if(!visited[v])
+				DFSTreeForestCount(visited, adjList, v);
+		}
+	}
+	private static void addEdge(Vector<Integer>[] adjList, int u, int v) {
+		adjList[u].add(v);
+		adjList[v].add(u);
+	}
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -518,7 +712,7 @@ public class IntroDFSnBFSQ {
 		
 		System.out.println(countVerticesAtLevel(nAryTreeUnDG, 2, 0));*/
 		
-		Graph g = new Graph(4);
+		/*Graph g = new Graph(4);
 		g.addDirectedEdge(0, 1);
 		g.addDirectedEdge(0, 2);
 		g.addDirectedEdge(0, 3);
@@ -526,11 +720,65 @@ public class IntroDFSnBFSQ {
 		g.addDirectedEdge(2, 1);
 		g.addDirectedEdge(1, 3);
 		
-		System.out.println(countPath(g, 2, 3));
+		System.out.println(countPath(g, 2, 3));*/
+		/*System.out.println(shortestPathInPrimes(1373, 8017)); // 1373, 8017 ... 1033, 8179
+		
+		(new IntroDFSnBFSQ()).twoJugWaterProblemBFS(4, 3, 2);
+		(new IntroDFSnBFSQ()).twoJugWaterProblemBFS(3, 4, 2);*/
+		int V=5;
+		Vector<Integer>[] adjList = new Vector[V];
+		for (int i = 0; i < adjList.length; i++) {
+			adjList[i] = new Vector<>();
+		}
+		addEdge(adjList, 0, 1);
+		addEdge(adjList, 0, 2);
+		addEdge(adjList, 3, 4);
+		
+		System.out.println(countNoOfTrees(adjList, V));
 	}
 	
 	class CustSum{
 		int sum=0;
 	}
+	
+	class Pair{
+		int first, second;
+		
+		public Pair(int first, int second) {
+			this.first=first;
+			this.second=second;
+		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + first;
+			result = prime * result + second;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Pair other = (Pair) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (first != other.first)
+				return false;
+			if (second != other.second)
+				return false;
+			return true;
+		}
+
+		private IntroDFSnBFSQ getOuterType() {
+			return IntroDFSnBFSQ.this;
+		}
+	}
 }
