@@ -614,6 +614,114 @@ public class IntroDFSnBFSQ {
 		adjList[u].add(v);
 		adjList[v].add(u);
 	}
+	/**
+	 * Description - BFS using vectors & queue as per the algorithm of CLRS. Breadth-first search traversal of a graph using the algorithm given in CLRS book.
+	 * BFS(G,s)
+		1  for each vertex u in G.V - {s}
+		2     u.color = white
+		3     u.d = INF
+		4     u.p = NIL
+		5  s.color = green
+		6  s.d = 0
+		7  s.p = NIL
+		8  Q = NULL
+		9  ENQUEUE(Q,s)
+		10 while Q != NULL
+		11    u = DEQUEUE(Q)
+		12    for each v in G.Adj[u]
+		13       if v.color == white
+		14          v.color = green
+		15          v.d = u.d + 1
+		16          v.p = u
+		17          ENQUEUE(Q,v)
+		18    u.color = dark_green
+	 * @param adjList
+	 * @param n
+	 */
+	public static void bfsUsingCLRS(Vector<Integer>[] adjList, int n) {
+		String[] color = new String[n];
+		int[] dist = new int[n];
+		int[] p = new int[n];
+		
+		Arrays.fill(color, "WHITE");
+		Arrays.fill(p, -1);
+		Arrays.fill(dist, Integer.MIN_VALUE);
+		//dist[0]=0;
+		//color[0]="GREEN";
+		
+		for (int i = 0; i < n; i++) {
+			if(color[i].equalsIgnoreCase("WHITE")) {
+				bfsUsingCLRSUtil(i, adjList, color, dist, p);
+			}
+		}
+		
+	}
+	private static void bfsUsingCLRSUtil(int start, Vector<Integer>[] adjList, String[] color, int[] dist, int[] p) {
+		List<Integer> queue = new ArrayList<>();
+		queue.add(start); // ENQUEUE
+		dist[start]=0;
+		color[start]="GREEN";
+		
+		while(!queue.isEmpty()) {
+			int u = queue.remove(0); // DEQUEUE
+			
+			System.out.print(u+" ");
+			
+			Iterator<Integer> vi = adjList[u].iterator();
+			while (vi.hasNext()) {
+				Integer v = (Integer) vi.next();
+				
+				if(color[v].equalsIgnoreCase("WHITE")) {
+					queue.add(v); // ENQUEUE
+					
+					color[v] = "GREEN";
+					dist[v]=dist[u]+1;
+					p[v]=u;
+				}
+			}
+			
+			color[u]="DEEP_GREEN";
+		}
+	}
+	/**
+	 * Description - Level of Each node in a Tree from source node (using BFS).
+	 * Time Complexity = O(E+V).
+	 * @param nAryTree
+	 * @param s
+	 */
+	public static void levelNodesTreeBFS(Graph nAryTree, int s) {
+		int[] level = new int[nAryTree.getV()];
+		Arrays.fill(level, -1);
+		
+		List<Integer> queue = new ArrayList<>();
+		boolean[] visited = new boolean[nAryTree.getV()];
+		
+		queue.add(s);
+		visited[0]=true;
+		level[0]=0;
+		
+		while (!queue.isEmpty()) {
+			int u = queue.remove(0);
+			
+			Iterator<Integer> vi = nAryTree.getAdjListArr()[u].iterator();
+			while (vi.hasNext()) {
+				Integer v = (Integer) vi.next();
+				if (!visited[v]) {
+					level[v]=level[u]+1;
+					visited[v]=true;
+					queue.add(v);
+				}
+			}
+			
+		}
+		
+		/*Arrays.stream(level).forEach(i->{System.out.println(i);});*/
+		
+		for (int i = 0; i < level.length; i++) {
+			System.out.println(i+" === "+level[i]);
+		}
+		
+	}
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -725,7 +833,7 @@ public class IntroDFSnBFSQ {
 		
 		(new IntroDFSnBFSQ()).twoJugWaterProblemBFS(4, 3, 2);
 		(new IntroDFSnBFSQ()).twoJugWaterProblemBFS(3, 4, 2);*/
-		int V=5;
+		/*int V=5;
 		Vector<Integer>[] adjList = new Vector[V];
 		for (int i = 0; i < adjList.length; i++) {
 			adjList[i] = new Vector<>();
@@ -734,7 +842,35 @@ public class IntroDFSnBFSQ {
 		addEdge(adjList, 0, 2);
 		addEdge(adjList, 3, 4);
 		
-		System.out.println(countNoOfTrees(adjList, V));
+		System.out.println(countNoOfTrees(adjList, V));*/
+		
+		/*int V=7;
+		Vector<Integer>[] adjList = new Vector[V];
+		for (int i = 0; i < adjList.length; i++) {
+			adjList[i] = new Vector<>();
+		}
+		
+		addEdge(adjList, 0, 1);
+	    addEdge(adjList, 0, 2);
+	    addEdge(adjList, 1, 3);
+	    addEdge(adjList, 1, 4);
+	    addEdge(adjList, 2, 5);
+	    addEdge(adjList, 2, 6);
+	    
+	    bfsUsingCLRS(adjList, V);*/
+		
+		Graph nAryTree = new Graph(8);
+		
+		nAryTree.addDirectedEdge(0,1);
+		nAryTree.addDirectedEdge(0,2);
+		nAryTree.addDirectedEdge(1,3);
+		nAryTree.addDirectedEdge(1,4);
+		nAryTree.addDirectedEdge(1,5);
+		nAryTree.addDirectedEdge(2,5);
+		nAryTree.addDirectedEdge(2,6);
+		nAryTree.addDirectedEdge(6,7);
+		
+		levelNodesTreeBFS(nAryTree, 0);
 	}
 	
 	class CustSum{
