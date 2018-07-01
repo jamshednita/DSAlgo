@@ -2,6 +2,7 @@ package com.graph;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -722,6 +723,35 @@ public class IntroDFSnBFSQ {
 		}
 		
 	}
+	/**
+	 * Description - Given n and k, Construct a palindrome of size n using a binary number of size k repeating itself to wrap into the palindrome. The palindrome must always begin with 1 and contains maximum number of zeros.
+	 * @param k - Size of repeating binary string.
+	 * @param n - Size of palindrome.
+	 */
+	public static void constructBinaryPalindrome(int k, int n) {
+		char[] nStr=new char[n];
+		Arrays.fill(nStr, '0');
+		
+		int i=0;
+		nStr[i]='1';
+		 while(i+k<n) {
+			 nStr[i+k]='1';
+			 i+=k;
+		 }
+		 
+		 i=n-1;
+		 nStr[i]='1';
+		 
+		 while(i-k>0) {
+			 nStr[i-k]='1';
+			 i-=k;
+		 }
+		 
+		 String outputPalindrome = new String(nStr);
+		 
+		 System.out.println("Binary string of length k = "+outputPalindrome.substring(0, k));
+		 System.out.println("Constructed Palindrome = "+outputPalindrome);
+	}
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -859,7 +889,7 @@ public class IntroDFSnBFSQ {
 	    
 	    bfsUsingCLRS(adjList, V);*/
 		
-		Graph nAryTree = new Graph(8);
+		/*Graph nAryTree = new Graph(8);
 		
 		nAryTree.addDirectedEdge(0,1);
 		nAryTree.addDirectedEdge(0,2);
@@ -870,7 +900,9 @@ public class IntroDFSnBFSQ {
 		nAryTree.addDirectedEdge(2,6);
 		nAryTree.addDirectedEdge(6,7);
 		
-		levelNodesTreeBFS(nAryTree, 0);
+		levelNodesTreeBFS(nAryTree, 0);*/
+		
+		constructBinaryPalindrome(3, 5);
 	}
 	
 	class CustSum{
