@@ -752,6 +752,28 @@ public class IntroDFSnBFSQ {
 		 System.out.println("Binary string of length k = "+outputPalindrome.substring(0, k));
 		 System.out.println("Constructed Palindrome = "+outputPalindrome);
 	}
+	
+	/**
+	 * Description - Transpose of a directed graph G is another directed graph on the same set of vertices with all of the edges reversed compared to the orientation of the corresponding edges in G. That is, if G contains an edge (u, v) then the converse/transpose/reverse of G contains an edge (v, u) and vice versa.
+	 * @param org_g - Original Directed Graph
+	 * @return - Transposed Graph
+	 */
+	public static Graph transpose(Graph org_g) {
+		Graph tsp_g=new Graph(org_g.getV());
+		
+		LinkedList<Integer>[] adjList =  org_g.getAdjListArr();
+		
+		for (int u=0; u<adjList.length; u++) {
+			for (Iterator iterator = adjList[u].iterator(); iterator.hasNext();) {
+				Integer v = (Integer) iterator.next();
+				
+				tsp_g.addDirectedEdge(v, u);
+			}
+		}
+		
+		return tsp_g;
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -900,9 +922,25 @@ public class IntroDFSnBFSQ {
 		nAryTree.addDirectedEdge(2,6);
 		nAryTree.addDirectedEdge(6,7);
 		
-		levelNodesTreeBFS(nAryTree, 0);*/
+		levelNodesTreeBFS(nAryTree, 0);
 		
-		constructBinaryPalindrome(3, 5);
+		constructBinaryPalindrome(3, 5);*/
+		
+		Graph org_gph = new Graph(5);
+		org_gph.addDirectedEdge(0, 1);
+		org_gph.addDirectedEdge(0, 3);
+		org_gph.addDirectedEdge(0, 4);
+		
+		org_gph.addDirectedEdge(2, 0);
+		
+		org_gph.addDirectedEdge(3, 2);
+		
+		org_gph.addDirectedEdge(4, 3);
+		org_gph.addDirectedEdge(4, 1);
+		
+		Graph tps_gph = transpose(org_gph);
+		
+		System.out.println(tps_gph);
 	}
 	
 	class CustSum{
