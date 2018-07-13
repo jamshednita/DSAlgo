@@ -773,6 +773,104 @@ public class IntroDFSnBFSQ {
 		
 		return tsp_g;
 	}
+	/**
+	 * Description - Path in a Rectangle with Circles
+	 * @param x - Array contains x co-ordinates of circles
+	 * @param y - Array contains y co-ordinates of circles
+	 * @param m
+	 * @param n
+	 * @param k - No of circles OR size of x,y array
+	 * @param r -  radius of circle
+	 * @return - true if there exist a path from start to end otherwise false.
+	 */
+	public static boolean isPossible(int[] x, int[] y, int m, int n, int k, int r) {
+		int[][] rect = new int[m][n];
+		
+		for(int i=0; i<m; i++) {
+			for(int j=0; j<n; j++) {
+				for(int p=0; p<k; p++) {
+					
+					if(Math.sqrt(Math.pow(x[p]-1-i, 2) + Math.pow(y[p]-1-j, 2))<=r) {
+						rect[i][j]=-1; // This cell is blocked by circle.
+					}
+					
+				}
+			}
+		}
+		
+		if(rect[0][0]==-1)
+			return false;
+		
+		List<Integer[]> qu= new ArrayList();
+		
+		Integer[] start = {0,0}; // {x,y}
+		qu.add(start);
+		
+		while (!qu.isEmpty()) {
+			Integer[] curr = qu.remove(0);
+			
+			int elex = curr[0];
+			int eley = curr[1];
+			
+			if(elex-1>=0 && eley-1>=0 && rect[elex-1][eley-1] == 0) {
+				rect[elex-1][eley-1] = 1;
+				Integer[] topLeft = {elex-1, eley-1};
+				
+				qu.add(topLeft);
+			}
+			
+			if(elex-1>=0 && eley>=0 && rect[elex-1][eley] == 0) {
+				rect[elex-1][eley] = 1;
+				Integer[] top = {elex-1, eley};
+				
+				qu.add(top);
+			}
+			
+			if(elex-1>=0 && eley+1<n && rect[elex-1][eley+1] == 0) {
+				rect[elex-1][eley+1] = 1;
+				Integer[] topRight = {elex-1, eley+1};
+				
+				qu.add(topRight);
+			}
+			
+			if(elex>=0 && eley+1<n && rect[elex][eley+1] == 0) {
+				rect[elex][eley+1] = 1;
+				Integer[] right = {elex, eley+1};
+				
+				qu.add(right);
+			}
+			
+			if(elex+1<m && eley+1<n && rect[elex+1][eley+1] == 0) {
+				rect[elex+1][eley+1] = 1;
+				Integer[] bottomRight = {elex+1, eley+1};
+				
+				qu.add(bottomRight);
+			}
+			
+			if(elex+1<m && eley>=0 && rect[elex+1][eley] == 0) {
+				rect[elex+1][eley] = 1;
+				Integer[] bottom = {elex+1, eley};
+				
+				qu.add(bottom);
+			}
+			
+			if(elex+1<m && eley-1>=0 && rect[elex+1][eley-1] == 0) {
+				rect[elex+1][eley-1] = 1;
+				Integer[] bottomLeft = {elex+1, eley-1};
+				
+				qu.add(bottomLeft);
+			}
+			
+			if(elex>=0 && eley-1>=0 && rect[elex][eley-1] == 0) {
+				rect[elex][eley-1] = 1;
+				Integer[] left = {elex, eley-1};
+				
+				qu.add(left);
+			}
+		}
+		
+		return (rect[m-1][n-1] == 1);
+	}
 	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
@@ -926,7 +1024,7 @@ public class IntroDFSnBFSQ {
 		
 		constructBinaryPalindrome(3, 5);*/
 		
-		Graph org_gph = new Graph(5);
+		/*Graph org_gph = new Graph(5);
 		org_gph.addDirectedEdge(0, 1);
 		org_gph.addDirectedEdge(0, 3);
 		org_gph.addDirectedEdge(0, 4);
@@ -940,7 +1038,10 @@ public class IntroDFSnBFSQ {
 		
 		Graph tps_gph = transpose(org_gph);
 		
-		System.out.println(tps_gph);
+		System.out.println(tps_gph);*/
+		int[] x = {1,1};//{1,3};
+		int[] y = {2,3};//{3,3};
+		System.out.println(isPossible(x, y, 5, 5, 2, 1));
 	}
 	
 	class CustSum{
