@@ -931,6 +931,49 @@ public class IntroDFSnBFSQ {
 		}
 				
 	}
+	/**
+	 * Description - DFS for a n-ary tree (acyclic graph) represented as adjacency list.
+	 * 
+	 * @param adjListArr
+	 * @param node
+	 * @param parent
+	 */
+	public static void nAryTreeGphDFS(List<Integer>[] adjListArr, int node, int parent) {
+		System.out.print(node+" ");
+		
+		Iterator<Integer> vi = adjListArr[node].iterator();
+		
+		while (vi.hasNext()) {
+			Integer v = (Integer) vi.next();
+			if(v!=parent)
+				nAryTreeGphDFS(adjListArr, v, node);
+		}
+	}
+	/**
+	 * Description - Finds maximum number of edges that can be added without violating Bipartite property.
+	 * @param edges
+	 * @param n
+	 * @return
+	 */
+	public static int maxEdgesToStayBipertite(Vector<Integer>[] edges, int n) {
+		List<Integer> color0=new ArrayList<>();
+		List<Integer> color1=new ArrayList<>();
+		
+		color0.add(1);
+		
+		for(int u=1; u<edges.length; u++) {
+			Vector<Integer> edge = edges[u];
+			if (!edge.isEmpty()) {
+				if (color0.contains(u))
+					color1.addAll(edge);
+				else
+					color0.addAll(edge);
+			}
+			
+		}
+		
+		return (color0.size()*color1.size()) - (n-1);
+	}
 	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
@@ -1101,11 +1144,51 @@ public class IntroDFSnBFSQ {
 		System.out.println(tps_gph);
 		int[] x = {1,1};//{1,3};
 		int[] y = {2,3};//{3,3};
-		System.out.println(isPossible(x, y, 5, 5, 2, 1));*/
+		System.out.println(isPossible(x, y, 5, 5, 2, 1));
 		
 		int parent[] = { -1, 0, 0, 0, 3, 1, 1, 2 };
 		
-		System.out.println(treeHightUsingParentArr(parent));
+		System.out.println(treeHightUsingParentArr(parent));*/
+		
+		/*// Number of nodes
+        int nodes = 5;
+      
+        // Adjacency list
+        LinkedList<Integer> list[] = new LinkedList[nodes+1];     
+         
+        for (int i = 0; i < list.length; i++){
+            list[i] = new LinkedList<Integer>();
+        }
+         
+        // Designing the tree
+        list[1].add(2);
+        list[2].add(1);
+      
+        list[1].add(3);
+        list[3].add(1);
+      
+        list[2].add(4);
+        list[4].add(2);
+      
+        list[3].add(5);
+        list[5].add(3);
+      
+        // Function call
+        nAryTreeGphDFS(list, 1, 0);*/
+		int n=3;//5;
+		Vector<Integer>[] edges = new Vector[n+1];
+		
+		for (int i = 0; i < edges.length; i++) {
+			edges[i]=new Vector<>();
+		}
+		
+		edges[1].add(2);
+		edges[1].add(3);
+		
+		/*edges[2].add(4);
+		edges[3].add(5);*/
+		
+		System.out.println(maxEdgesToStayBipertite(edges, n));
 	}
 	
 	class CustSum{
