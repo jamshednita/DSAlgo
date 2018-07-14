@@ -974,6 +974,104 @@ public class IntroDFSnBFSQ {
 		
 		return (color0.size()*color1.size()) - (n-1);
 	}
+	/**
+	 * Descrption - A Peterson Graph Problem. 
+	 *             The following graph G is called a Petersen graph and its vertices have been numbered from 0 to 9. Some letters have also been assigned to vertices of G, as can be seen from the following picture:
+     *             Let’s consider a walk W in graph G, which consists of L vertices W1, W2, …, WL. A string S of L letters 'A' – 'E' is realized by walk W if the sequence of letters written along W is equal to S. Vertices can be visited multiple times while walking along W.
+	 * @param s
+	 * @param u
+	 * @return
+	 */
+	public static String petersonGraph(String s, int u) {
+		List<Integer>[] alphabetMapping = new ArrayList[5]; // A={0,5}, B={1,6}, C={2,7}, D={3,8}, E={4,9}
+		List<Integer>[] numMapping = new ArrayList[10]; // 0={1,4,5}, 1={0,2,6}, 2={1,3,7}, 3={2,4,8}, 4={0,3,9}, 5={0,7,8}, 6={1,8,9}, 7={2,5,9}, 8={3,5,6}, 9={4,6,7}
+		
+		for(int i=0; i<5; i++) {
+			alphabetMapping[i]=new ArrayList<>();
+			
+			numMapping[i]=new ArrayList<>();
+			numMapping[i+5]=new ArrayList<>();
+		}
+		
+		alphabetMapping[0].add(0);
+		alphabetMapping[0].add(5);
+		
+		alphabetMapping[1].add(1);
+		alphabetMapping[1].add(6);
+		
+		alphabetMapping[2].add(2);
+		alphabetMapping[2].add(7);
+		
+		alphabetMapping[3].add(3);
+		alphabetMapping[3].add(8);
+		
+		alphabetMapping[4].add(4);
+		alphabetMapping[4].add(9);
+		
+		numMapping[0].add(1);
+		numMapping[0].add(4);
+		numMapping[0].add(5);
+		
+		numMapping[1].add(0);
+		numMapping[1].add(2);
+		numMapping[1].add(6);
+		
+		numMapping[2].add(1);
+		numMapping[2].add(3);
+		numMapping[2].add(7);
+		
+		numMapping[3].add(2);
+		numMapping[3].add(4);
+		numMapping[3].add(8);
+		
+		numMapping[4].add(0);
+		numMapping[4].add(3);
+		numMapping[4].add(9);
+		
+		numMapping[5].add(0);
+		numMapping[5].add(7);
+		numMapping[5].add(8);
+		
+		numMapping[6].add(1);
+		numMapping[6].add(8);
+		numMapping[6].add(9);
+		
+		numMapping[7].add(2);
+		numMapping[7].add(5);
+		numMapping[7].add(9);
+		
+		numMapping[8].add(3);
+		numMapping[8].add(5);
+		numMapping[8].add(6);
+		
+		numMapping[9].add(4);
+		numMapping[9].add(6);
+		numMapping[9].add(7);
+		
+		StringBuffer resultBuff = new StringBuffer();
+		resultBuff.append(u);
+		
+		for(int ch=1; ch<s.length(); ch++) {
+			int vc = (int)(s.charAt(ch) - 'A');
+			
+			int v1 = alphabetMapping[vc].get(0);
+			int v2 = alphabetMapping[vc].get(1);
+			
+			List<Integer> adj = numMapping[u];
+			
+			if(adj.contains(v1)) {
+				resultBuff.append(v1);
+				u=v1;
+			}else if(adj.contains(v2)) {
+				resultBuff.append(v2);
+				u=v2;
+			}else {
+				return null;
+			}
+		}
+		
+		return resultBuff.toString();
+	}
 	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
@@ -1175,7 +1273,7 @@ public class IntroDFSnBFSQ {
       
         // Function call
         nAryTreeGphDFS(list, 1, 0);*/
-		int n=3;//5;
+		/*int n=3;//5;
 		Vector<Integer>[] edges = new Vector[n+1];
 		
 		for (int i = 0; i < edges.length; i++) {
@@ -1185,10 +1283,16 @@ public class IntroDFSnBFSQ {
 		edges[1].add(2);
 		edges[1].add(3);
 		
-		/*edges[2].add(4);
-		edges[3].add(5);*/
+		edges[2].add(4);
+		edges[3].add(5);
 		
-		System.out.println(maxEdgesToStayBipertite(edges, n));
+		System.out.println(maxEdgesToStayBipertite(edges, n));*/
+		
+		String walk = "ABB";
+		System.out.println(petersonGraph(walk, (walk.charAt(0)-'A')));
+		
+		System.out.println(petersonGraph(walk, (walk.charAt(0)-'A' + 5)));
+
 	}
 	
 	class CustSum{
