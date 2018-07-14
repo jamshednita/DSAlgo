@@ -871,6 +871,66 @@ public class IntroDFSnBFSQ {
 		
 		return (rect[m-1][n-1] == 1);
 	}
+	/**
+	 * Description - Height of a generic tree from parent array
+	 * @param parentArr
+	 * @return
+	 */
+	public static int treeHightUsingParentArr(int[] parentArr) {
+		int maxHight=0;
+		int[] hightArr = new int[parentArr.length];
+		boolean[] visited = new boolean[parentArr.length];
+		
+		for(int i=0; i<parentArr.length; i++) {
+			if(!visited[i]) {
+				//hightArr[i] = parentArr[i]+1;
+				hightArr[i] = fillHight(parentArr, hightArr, visited, i);
+				maxHight = (hightArr[i]>maxHight?hightArr[i]:maxHight);
+			}
+		}
+		
+		return maxHight;
+	}
+	
+	private static int fillHight(int[] parent, int[] hight, boolean[] visited, int node) {
+		visited[node]=true;
+		
+		if(parent[node] == -1)
+			return 0;
+		
+		if(!visited[parent[node]])
+			return 1+fillHight(parent, hight, visited, parent[node]);
+		else
+			return 1+hight[parent[node]];
+		
+	}
+	/**
+	 * Description - BFS using STL for competitive coding
+	 * 
+	 * @param gph
+	 * @param start
+	 */
+	public static void bfsUsingSTL(Graph gph, int start) {
+		boolean[] visited = new boolean[gph.getV()];
+		List<Integer> qu = new ArrayList<Integer>();
+		
+		qu.add(start);
+		
+		while(!qu.isEmpty()) {
+			int u = qu.remove(0);
+			
+			System.out.print(u+" ");
+			visited[u]=true;
+			List<Integer> vi = gph.getAdjListArr()[u];
+			
+			for (Iterator<Integer> iterator = vi.iterator(); iterator.hasNext();) {
+				Integer v = (Integer) iterator.next();
+				if(!visited[v])
+					qu.add(v);
+			}
+		}
+				
+	}
 	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
@@ -1038,10 +1098,14 @@ public class IntroDFSnBFSQ {
 		
 		Graph tps_gph = transpose(org_gph);
 		
-		System.out.println(tps_gph);*/
+		System.out.println(tps_gph);
 		int[] x = {1,1};//{1,3};
 		int[] y = {2,3};//{3,3};
-		System.out.println(isPossible(x, y, 5, 5, 2, 1));
+		System.out.println(isPossible(x, y, 5, 5, 2, 1));*/
+		
+		int parent[] = { -1, 0, 0, 0, 3, 1, 1, 2 };
+		
+		System.out.println(treeHightUsingParentArr(parent));
 	}
 	
 	class CustSum{
