@@ -1073,6 +1073,93 @@ public class IntroDFSnBFSQ {
 		return resultBuff.toString();
 	}
 	
+	/**
+	 * Description - Print all paths from a given source to a destination (DFS based approach).
+	 * 
+	 * @param dirG
+	 * @param s
+	 * @param d
+	 */
+	public static void printAllPathDFS(Graph dirG, int s, int d) {
+		List<Integer> pathTracker = new ArrayList<>();
+		boolean[] visited = new boolean[dirG.getV()];
+		
+		pathTracker.add(s);
+		//visited[s]=true;
+		
+		printAllPathDFSUtil(dirG, s, d, visited, pathTracker);
+	}
+	
+	private static void printAllPathDFSUtil(Graph dirG, int u, int d, boolean[] visited, List<Integer> pathTracker) {
+		visited[u]=true; // Mark the current node visited
+		
+		if(u==d) {
+			printPath(pathTracker); // Print if we found the destination.
+		}
+		
+		Iterator<Integer> vi = dirG.getAdjListArr()[u].iterator();
+		while (vi.hasNext()) {
+			Integer v = (Integer) vi.next();
+			
+			if(!visited[v]) {
+				pathTracker.add(v);
+				printAllPathDFSUtil(dirG, v, d, visited, pathTracker);
+				
+				pathTracker.remove(v); // This should be inside in this if case else it will delete the visited node. We only want to delete the node once it become unvisited and not in our current path.  
+			}
+		}
+		
+		visited[u]=false;
+	}
+
+	private static void printPath(List<Integer> pathTracker) {
+		for (int i=0; i<pathTracker.size(); i++) {
+			if(i!=0) {
+				System.out.print("->");
+			}
+			System.out.print(pathTracker.get(i));
+		}
+		System.out.println(); // FOR NEW_LINE
+	}
+	
+	/**
+	 * Description - Print all paths from a given source to a destination using BFS.
+	 * 
+	 * @param dirG
+	 * @param s
+	 * @param d
+	 */
+	public static void printAllPathBFS(Graph dirG, int s, int d) {
+		List<List<Integer>> pathQu = new ArrayList<>();
+		
+		List<Integer> path = new ArrayList<>();
+		path.add(s);
+		pathQu.add(path);
+		
+		while (!pathQu.isEmpty()) {
+			List<Integer> frontPath = pathQu.get(0);
+			pathQu.remove(0);
+			
+			int last = frontPath.get(frontPath.size()-1);
+			if(last == d)
+				printPath(frontPath);
+			
+			Iterator<Integer> vi = dirG.getAdjListArr()[last].iterator();
+			
+			while(vi.hasNext()) {
+				Integer v = vi.next();
+				
+				if(!frontPath.contains(v)) {
+					List<Integer> newPath = new ArrayList<>(frontPath);
+					newPath.add(v);
+					
+					pathQu.add(newPath);
+				}
+			}
+			
+		}
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -1292,6 +1379,20 @@ public class IntroDFSnBFSQ {
 		System.out.println(petersonGraph(walk, (walk.charAt(0)-'A')));
 		
 		System.out.println(petersonGraph(walk, (walk.charAt(0)-'A' + 5)));
+		
+		Graph printPathG = new Graph(4);
+		
+		printPathG.addDirectedEdge(0,1);
+		printPathG.addDirectedEdge(0,2);
+		printPathG.addDirectedEdge(0,3);
+		
+		printPathG.addDirectedEdge(2,0);
+		printPathG.addDirectedEdge(2,1);
+		
+		printPathG.addDirectedEdge(1,3);
+		
+		//printAllPathDFS(printPathG, 2, 3);
+		printAllPathBFS(printPathG, 2, 3);
 
 	}
 	
