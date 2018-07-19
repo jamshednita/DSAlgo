@@ -63,6 +63,9 @@ public class MainApp {
 		} /*catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			// If we are throwing checked/compile-time exception then we should either handle it with catch block along with try or declar it in 'throws' clause
+			// at method signature. Finally block is not an exception-handler and not meant to be.
 		}*/finally{
 			//return 1;
 			throw new NullPointerException("Custom Null Pointer Exception"); 
