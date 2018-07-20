@@ -1181,7 +1181,6 @@ public class IntroDFSnBFSQ {
 		
 		while(!qu.isEmpty()) {
 			int currSize = qu.size();
-			minE++;
 			
 			while(currSize>0) {
 				int front = qu.remove(0);
@@ -1197,9 +1196,9 @@ public class IntroDFSnBFSQ {
 					if(!visited[v])
 						qu.add(v);
 				}
-				
+				currSize--;
 			}
-			
+			minE++;	
 		}
 		
 		return -1;
@@ -1418,7 +1417,7 @@ public class IntroDFSnBFSQ {
 		edges[2].add(4);
 		edges[3].add(5);
 		
-		System.out.println(maxEdgesToStayBipertite(edges, n));*/
+		System.out.println(maxEdgesToStayBipertite(edges, n));
 		
 		String walk = "ABB";
 		System.out.println(petersonGraph(walk, (walk.charAt(0)-'A')));
@@ -1437,7 +1436,7 @@ public class IntroDFSnBFSQ {
 		printPathG.addDirectedEdge(1,3);
 		
 		//printAllPathDFS(printPathG, 2, 3);
-		printAllPathBFS(printPathG, 2, 3);
+		printAllPathBFS(printPathG, 2, 3);*/
 		
 		int n = 9;
 		
