@@ -1160,6 +1160,51 @@ public class IntroDFSnBFSQ {
 		}
 	}
 	
+	/**
+	 * Description - Minimum number of edges between two vertices of a Graph. Time C0mplexity -  O(E+V)
+	 * 
+	 * @param g
+	 * @param s
+	 * @param d
+	 * @return
+	 */
+	public static int minEdge(Graph g, int s, int d) {
+		boolean[] visited = new boolean[g.getV()];
+		int minE = 1;
+		
+		List<Integer> qu = new ArrayList<>();
+		qu.add(s);
+		visited[s] = true;
+		
+		if(s==d)
+			return 0;
+		
+		while(!qu.isEmpty()) {
+			int currSize = qu.size();
+			minE++;
+			
+			while(currSize>0) {
+				int front = qu.remove(0);
+				
+				Iterator<Integer> vi =g.getAdjListArr()[front].iterator();
+				
+				while(vi.hasNext()) {
+					Integer v = vi.next();
+					
+					if(v==d)
+						return minE;
+					
+					if(!visited[v])
+						qu.add(v);
+				}
+				
+			}
+			
+		}
+		
+		return -1;
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -1393,6 +1438,21 @@ public class IntroDFSnBFSQ {
 		
 		//printAllPathDFS(printPathG, 2, 3);
 		printAllPathBFS(printPathG, 2, 3);
+		
+		int n = 9;
+		
+		Graph minEdgeG = new Graph(n);
+		minEdgeG.addUnDirectedEdge(1, 0);
+		minEdgeG.addUnDirectedEdge(1, 2);
+		minEdgeG.addUnDirectedEdge(0, 2);
+		minEdgeG.addUnDirectedEdge(0, 4);
+		minEdgeG.addUnDirectedEdge(2, 5);
+		minEdgeG.addUnDirectedEdge(4, 3);
+		minEdgeG.addUnDirectedEdge(6, 4);
+		
+		System.out.println(minEdge(minEdgeG, 1, 5));
+		System.out.println(minEdge(minEdgeG, 0, 5));
+		System.out.println(minEdge(minEdgeG, 1, 3));
 
 	}
 	
