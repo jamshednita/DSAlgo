@@ -4,11 +4,13 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -1204,6 +1206,60 @@ public class IntroDFSnBFSQ {
 		return -1;
 	}
 	
+	/**
+	 * Description - (Doubted) - Count nodes within K-distance from all nodes in a set 
+	 * Given an undirected tree with some marked nodes and a positive number K. We need to print the count of all such nodes which have distance from all marked nodes less than K that means every node whose distance from all marked nodes is less than K, should be counted in the result.
+	 * @param g
+	 * @param markedNodes
+	 */
+	public static void kDistantNode(Graph g, List<Integer> markedNodes, int k) {
+		boolean[] visited = new boolean[g.getV()];
+		List<Integer> qu = new ArrayList<>();
+		
+		Set<Integer> result = new HashSet<>();
+		
+		for (Iterator iterator = markedNodes.iterator(); iterator.hasNext();) {
+			Integer mn = (Integer) iterator.next();
+			
+			visited[mn]=true;
+		}
+		//qu.add(markedNodes.get(0));
+		//qu.remove(0);
+		
+		for (Iterator itr01 = markedNodes.iterator(); itr01.hasNext();) {
+			Integer mrkn = (Integer) itr01.next();
+
+			qu.add(mrkn);
+
+			int control = 1;
+			while (control < k) {
+
+				int size = qu.size();
+				while (size>0) {
+					int curr = qu.get(0);
+					qu.remove(0);
+
+					List<Integer> vs = g.getAdjListArr()[curr];
+					for (Iterator itr02 = vs.iterator(); itr02.hasNext();) {
+						Integer v = (Integer) itr02.next();
+
+						if (!visited[v]) {
+							result.add(v);
+						}
+
+						qu.add(v);
+					}
+					size--;
+				}
+				control++;
+			}
+			
+			qu.removeAll(qu);
+		}
+		
+		System.out.println(result);
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -1452,6 +1508,29 @@ public class IntroDFSnBFSQ {
 		System.out.println(minEdge(minEdgeG, 1, 5));
 		System.out.println(minEdge(minEdgeG, 0, 5));
 		System.out.println(minEdge(minEdgeG, 1, 3));
+		
+		Graph gh = new Graph(10);
+		
+		gh.addUnDirectedEdge(1, 0);
+		gh.addUnDirectedEdge(0, 8);
+		
+		gh.addUnDirectedEdge(0, 3);
+		gh.addUnDirectedEdge(2, 3);
+		
+		gh.addUnDirectedEdge(3, 6);
+		gh.addUnDirectedEdge(3, 7);
+		
+		gh.addUnDirectedEdge(3, 5);
+		gh.addUnDirectedEdge(4, 5);
+		gh.addUnDirectedEdge(5, 9);
+		
+		List<Integer> mn = new ArrayList<>();
+		
+		mn.add(1);
+		mn.add(2);
+		mn.add(4);
+		
+		kDistantNode(gh, mn, 3);
 
 	}
 	

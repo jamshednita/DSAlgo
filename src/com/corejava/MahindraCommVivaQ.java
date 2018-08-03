@@ -6,13 +6,14 @@ public class MahindraCommVivaQ {
 		int maxSum=arr[0], currSum=arr[0];
 		
 		for(int i=1; i<arr.length; i++) {
-			if(currSum+arr[i]>currSum && currSum+arr[i]>arr[i]) {
+			if(currSum+arr[i]>arr[i]) {
 				currSum+=arr[i];
 			}else {
-				if(maxSum<currSum) {
-					maxSum = currSum;
-				}
 				currSum = arr[i];
+			}
+			
+			if(maxSum<currSum) {
+				maxSum = currSum;
 			}
 		}
 		
