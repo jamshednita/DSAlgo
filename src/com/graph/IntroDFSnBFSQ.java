@@ -1260,6 +1260,90 @@ public class IntroDFSnBFSQ {
 		System.out.println(result);
 	}
 	
+	/**
+	 * Description - Bidirectional Search. Searching a graph is quite famous problem and have a lot of practical use. We have already discussed here how to search for a goal vertex starting from a source vertex using BFS. In normal graph search using BFS/DFS we begin our search in one direction usually from source vertex toward the goal vertex, but what if we start search form both direction simultaneously.
+	 * @param g
+	 * @param s
+	 * @param d
+	 */
+	public static void biDirectionalTraversal(Graph g, int s, int t) {
+		// store visited nodes from  both direction traversal
+		boolean[] s_visited = new boolean[g.getV()];
+		boolean[] t_visited = new boolean[g.getV()];
+		// Queue to store level nodes
+		List<Integer> sq = new ArrayList<>();
+		List<Integer> tq = new ArrayList<>();
+		// To tracke parent for printing path
+		int[] s_parent = new int[g.getV()];
+		int[] t_parent = new int[g.getV()];
+		
+		Arrays.fill(s_parent, -1);
+		Arrays.fill(t_parent, -1);
+		
+		sq.add(s);
+		tq.add(t);
+		
+		//s_visited[s]=true;
+		//t_visited[t]=true;
+		while(!sq.isEmpty() && !tq.isEmpty()) {
+			bdtBFS(g, sq, s_visited, s_parent);
+			bdtBFS(g, tq, t_visited, t_parent);
+			
+			int intersection = hasIntersection(s_visited, t_visited);
+			
+			if(intersection!=-1) {
+				printPath(s_parent, t_parent, s, t, intersection);
+				return;
+			}
+		}
+		
+		System.err.println("PATH DOES NOT EXIST");
+	}
+	private static void printPath(int[] s_parent, int[] t_parent, int s, int t, int intrsn) {
+		Stack<Integer> path = new Stack<>();
+		int top = intrsn;
+		while(top!=-1) {
+			path.push(top);
+			top=s_parent[top];
+		}
+		
+		while(!path.empty()) {
+			System.out.print(path.pop()+" ");
+		}
+		top = t_parent[intrsn];
+		while(top!=-1) {
+			System.out.print(top+" ");
+			top = t_parent[top];
+		}
+	}
+	private static int hasIntersection(boolean[] s_visited, boolean[] t_visited) {
+		for (int i = 0; i < t_visited.length; i++) {
+			if(s_visited[i] && t_visited[i])
+				return i;
+		}
+		return -1;
+	}
+	private static void bdtBFS(Graph g, List<Integer> sq, boolean[] s_visited, int[] s_parent) {
+		Integer u = sq.get(0);
+		sq.remove(0);
+		
+		s_visited[u] = true;
+		
+		Iterator<Integer> vItr = g.getAdjListArr()[u].iterator();
+		
+		while(vItr.hasNext()) {
+			Integer v = vItr.next();
+			
+			if(!s_visited[v]) {
+				sq.add(v);
+				s_parent[v]=u;
+				
+				s_visited[v] = true;
+			}
+
+		}
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -1494,7 +1578,7 @@ public class IntroDFSnBFSQ {
 		//printAllPathDFS(printPathG, 2, 3);
 		printAllPathBFS(printPathG, 2, 3);*/
 		
-		int n = 9;
+		/*int n = 9;
 		
 		Graph minEdgeG = new Graph(n);
 		minEdgeG.addUnDirectedEdge(1, 0);
@@ -1530,7 +1614,32 @@ public class IntroDFSnBFSQ {
 		mn.add(2);
 		mn.add(4);
 		
-		kDistantNode(gh, mn, 3);
+		kDistantNode(gh, mn, 3);*/
+		
+		Graph bg = new Graph(15);
+		bg.addUnDirectedEdge(0, 4);
+		bg.addUnDirectedEdge(1, 4);
+		
+		bg.addUnDirectedEdge(4, 6);
+		
+		bg.addUnDirectedEdge(2, 5);
+		bg.addUnDirectedEdge(3, 5);
+		
+		bg.addUnDirectedEdge(5, 6);
+		
+		bg.addUnDirectedEdge(6, 7);
+		bg.addUnDirectedEdge(7, 8);
+		
+		bg.addUnDirectedEdge(8, 9);
+		bg.addUnDirectedEdge(8, 10);
+		
+		bg.addUnDirectedEdge(9, 11);
+		bg.addUnDirectedEdge(9, 12);
+		
+		bg.addUnDirectedEdge(10, 13);
+		bg.addUnDirectedEdge(10, 14);
+		
+		biDirectionalTraversal(bg, 0, 14);
 
 	}
 	
