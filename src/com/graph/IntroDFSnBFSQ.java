@@ -1344,6 +1344,159 @@ public class IntroDFSnBFSQ {
 		}
 	}
 	
+	/**
+	 * Description - Minimum edge reversals to make a root. Given a directed tree with V vertices and V-1 edges, we need to choose such a root (from given nodes from where we can reach to every other node) with a minimum number of edge reversal.
+	 * @param edges
+	 * @param e
+	 */
+	public void minReversalForTreeRoot(int[][] edges, int e) {
+		// number of nodes are one more than number of edges
+		int V=e+1;
+		// data structure to store directed tree
+		Vector<Pair>[] g = new Vector[V];
+		
+		// disRev stores two values - distance and back
+	    // edge count from root node
+		Pair[] disRev = new Pair[V];
+		
+		boolean[] visited = new boolean[V];
+		
+		for(int i=0; i<e; i++) {
+			int u=edges[i][0];
+			int v=edges[i][1];
+			
+			// add 0 weight in direction of u to v
+	        if(g[u] == null)
+	        	g[u] = new Vector<>();
+	        
+	        g[u].add(new Pair(v, 0));
+	 
+	        // add 1 weight in reverse direction
+	        if(g[v] == null)
+	        	g[v] = new Vector<>();
+	        g[v].add(new Pair(u, 1));
+		}
+		
+		//initialize all variables
+	    for (int i = 0; i < V; i++)
+	    {
+	        visited[i] = false;
+	        if(disRev[i] == null)
+	        	disRev[i] = new Pair(0, 0);
+	        else
+	        	disRev[i].first = disRev[i].second = 0;
+	    }
+	    
+	    int root = 0;
+	    //dfs populates disRev data structure and
+	    // store total reverse edge counts
+	    
+	    int totalRev = dfs(g, disRev, visited, root);
+	    
+	    // UnComment below lines to print each node's
+	    // distance and edge reversal count from root node
+	   
+	    for (int i = 0; i < V; i++)
+	    {
+	        System.out.println( i + " : " + disRev[i].first + " " + disRev[i].second);
+	    }
+	   
+	    int res = Integer.MAX_VALUE;
+	    
+	    // loop over all nodes to choose minimum edge reversal
+	    for (int i = 0; i < V; i++)
+	    {
+	        // (reversal in path to i) + (reversal
+	        // in all other tree parts)
+	        int edgesToRev = (totalRev - disRev[i].second) +
+	                         (disRev[i].first - disRev[i].second);
+	 
+	        // choose minimum among all values
+	        if (edgesToRev < res)
+	        {
+	            res = edgesToRev;
+	            root = i;
+	        }
+	    }
+	 
+	    // print the designated root and total
+	    // edge reversal made
+	    System.out.println(root + " " + res); 
+	}
+	
+	private int dfs(Vector<Pair>[] g, Pair[] disRev, boolean[] visited, int u) {
+		// visit current node
+		visited[u] = true;
+	    int totalRev = 0;
+	 
+	    // looping over all neighbors
+	    for (int i = 0; i < g[u].size(); i++)
+	    {
+	        int v = g[u].get(i).first;
+	        if (!visited[v])
+	        {
+	            // distance of v will be one more than distance of u
+	            disRev[v].setFirst(disRev[u].first + 1);
+	 
+	            // initialize back edge count same as
+	            // parent node's count
+	            disRev[v].setSecond(disRev[u].second);
+	 
+	            // if there is a reverse edge from u to i,
+	            // then only update
+	            if (g[u].get(i).second>0)
+	            {
+	                disRev[v].setSecond(disRev[u].second + 1);
+	                totalRev++;
+	            }
+	            totalRev += dfs(g, disRev, visited, v);
+	        }
+	    }
+	 
+	    // return total reversal in subtree rooted at u
+	    return totalRev;
+	}
+	/**
+	 * Description - Move weighting scale alternate under given constraints
+	 * 				Given a weighting scale and an array of different positive weights where we have an infinite supply of each weight. Our task is to put weights on left and right pans of scale one by one in such a way that pans move to that side where weight is put i.e. each time, pans of scale moves to alternate sides.
+	 * @param weight
+	 * @param steps
+	 */
+	public static void weightOnScale(int[] weight, int steps) {
+		int weightDiff = 0;
+		int prevWeight = 0;
+		
+		int panA=0, panB=0; // PanA and panB weights.
+		boolean panFlip=true; // For pan alternation
+		
+		for(int i=0; i<weight.length;) {
+			int currWeight = weight[i];
+			
+			if(currWeight>weightDiff && currWeight!=prevWeight) {
+				System.out.print(currWeight + " ");
+				steps--;
+				
+				prevWeight = currWeight;
+				
+				if(panFlip) {
+					panA+=currWeight;
+					panFlip=false;
+				}else {
+					panB+=currWeight;
+					panFlip=true;
+				}
+				
+				weightDiff=(panA-panB)>0?(panA-panB):(panB-panA);
+				
+				i=0;
+			}else
+				i++;
+			
+			if(steps == 0)
+				break;
+		}
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -1640,6 +1793,16 @@ public class IntroDFSnBFSQ {
 		bg.addUnDirectedEdge(10, 14);
 		
 		biDirectionalTraversal(bg, 0, 14);
+		
+		/*
+		 * int edges[][] = { {0, 1}, {2, 1}, {3, 2}, {3, 4}, {5, 4}, {5, 6}, {7, 6} };
+		 * 
+		 * (new IntroDFSnBFSQ()).minReversalForTreeRoot(edges, 7);
+		 */
+
+		int[] wt = { 2, 3, 5, 6 };
+
+		weightOnScale(wt, 10);
 
 	}
 	
@@ -1653,6 +1816,22 @@ public class IntroDFSnBFSQ {
 		public Pair(int first, int second) {
 			this.first=first;
 			this.second=second;
+		}
+
+		public int getFirst() {
+			return first;
+		}
+
+		public void setFirst(int first) {
+			this.first = first;
+		}
+
+		public int getSecond() {
+			return second;
+		}
+
+		public void setSecond(int second) {
+			this.second = second;
 		}
 
 		@Override
