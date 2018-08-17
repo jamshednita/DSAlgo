@@ -1497,6 +1497,45 @@ public class IntroDFSnBFSQ {
 		}
 	}
 	
+	/**
+	 * Description - Number of pair of positions in matrix which are not accessible.
+	 * @param g
+	 * @param n
+	 * @return
+	 */
+	public static int countNonAccessible(Graph g, int n) {
+		int ans=0;
+		boolean[] visited = new boolean[n*n + 1];
+		
+		for (int i = 1; i <= n*n; i++) {
+			if(!visited[i]) {
+				visited[i]=true;
+				int k = dfsForConnectedComp(g, i, visited);
+				
+				ans+=k*(n*n - k);
+			}
+		}
+		
+		return ans;
+	}
+
+	private static int dfsForConnectedComp(Graph g, int i, boolean[] visited) {
+		int res=1;
+		
+		Iterator<Integer> vi = g.getAdjListArr()[i].iterator();
+		
+		while(vi.hasNext()) {
+			Integer v = vi.next();
+			
+			if(!visited[v]) {
+				visited[v]=true;
+				res+=dfsForConnectedComp(g, v, visited);
+			}
+		}
+		
+		return res;
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -1800,9 +1839,15 @@ public class IntroDFSnBFSQ {
 		 * (new IntroDFSnBFSQ()).minReversalForTreeRoot(edges, 7);
 		 */
 
-		int[] wt = { 2, 3, 5, 6 };
-
-		weightOnScale(wt, 10);
+		/*int[] wt = {2,3,5,6};
+		
+		weightOnScale(wt, 10);*/
+		int n=2;
+		Graph g = new Graph(n*n + 1);
+		g.addUnDirectedEdge(1, 2);
+		g.addUnDirectedEdge(2, 4);
+		
+		System.out.println(countNonAccessible(g, n));
 
 	}
 	
