@@ -1536,6 +1536,252 @@ public class IntroDFSnBFSQ {
 		return res;
 	}
 	
+	/**
+	 * Description - Maximum product of two non-intersecting paths in a tree. Given an undirected connected tree with N nodes (and N-1 edges), we need to find two paths in this tree such that they are non-intersecting and the product of their length is maximum.
+	 * @param g
+	 * @param N
+	 * @return
+	 */
+	public int maxProductOfTwoPaths(Graph g, int N) {
+		int result = Integer.MIN_VALUE;
+		int path1,path2;
+		
+		// one by one removing all edges and calling
+	    // dfs on both subtrees
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < g.getAdjListArr()[i].size(); j++) {
+				// calling dfs on subtree rooted at
+	            // g[i][j], excluding edge from g[i][j]
+	            // to i.
+				
+				CustSum maxSum = new CustSum();
+				path1 = dfsMaxProductOfTwoPaths(g, maxSum, g.getAdjListArr()[i].get(j), i);
+				
+				// calling dfs on subtree rooted at
+	            // I, excluding edge from i to g[i][j].
+				maxSum.sum = 0;
+				path2 = dfsMaxProductOfTwoPaths(g, maxSum, i, g.getAdjListArr()[i].get(j));
+				
+				result = Math.max(result, path1*path2);
+			}
+			
+		}
+		
+		return result;
+	}
+
+	private int dfsMaxProductOfTwoPaths(Graph g, CustSum curMax, int u, int v) {
+		// To find lengths of first and second maximum
+	    // in subtrees. currMax is to store overall
+	    // maximum.
+		int max1=0, max2=0, total=0;
+		
+		//  loop through all neighbors of u
+		for(int i=0; i<g.getAdjListArr()[u].size(); i++) {
+			if(g.getAdjListArr()[u].get(i) != v) {
+				//  call recursively with current neighbor as root
+				total = Math.max(total, dfsMaxProductOfTwoPaths(g, curMax, g.getAdjListArr()[u].get(i), u));
+				
+				//  get max from one side and update
+		        if (curMax.sum > max1)
+		        {
+		            max2 = max1;
+		            max1 = curMax.sum;
+		        }else
+		            max2 = Math.max(max2, curMax.sum);
+			}
+		}
+		// store total length by adding max1 and max2
+	    total = Math.max(total, max1 + max2);
+	 
+	    // update current max by adding 1, i.e.
+	    // current node is included
+	    curMax.sum = max1 + 1;
+	    return total;
+	}
+	/**
+	 * Description - Delete Edge to minimize subtree sum difference. Given an undirected tree whose each node is associated with a weight. We need to delete an edge in such a way that difference between sum of weight in one subtree to sum of weight in other subtree is minimized.
+	 * @param ug
+	 * @param weights
+	 * @param N
+	 * @return
+	 */
+	public int getMinSubtreeSumDiff(Graph ug, int[] weights, int N) {
+		CustSum res = new CustSum();
+		res.sum=Integer.MAX_VALUE;
+		int totalWt=0;
+		int[] individualWt=new int[N];
+		
+		for (int i = 0; i < weights.length; i++) {
+			individualWt[i] = weights[i];
+			totalWt+=weights[i];
+		}
+		
+		dfsGetMinSubtreeSumDiff(0,-1,totalWt, res,ug,individualWt);
+		return res.sum;
+	}
+	/* DFS method to traverse through edges,
+	   calculating subtree sum at each node and
+	   updating the difference between subtrees */
+	private void dfsGetMinSubtreeSumDiff(int u, int parent, int totalWt, CustSum res, Graph ug, int[] individualWt) {
+		int sum = individualWt[u];
+		/*  loop for all neighbors except parent and
+        aggregate sum over all subtrees    */
+		for (int i = 0; i < ug.getAdjListArr()[u].size(); i++) {
+			int v = ug.getAdjListArr()[u].get(i);
+			if(v != parent) {
+				dfsGetMinSubtreeSumDiff(v, u, totalWt, res, ug, individualWt);
+				sum+=individualWt[v];
+			}
+		}
+		// store sum in current node's subtree index
+		individualWt[u] = sum;
+		/*  at one side subtree sum is 'sum' and other side
+        subtree sum is 'totalSum - sum' so their difference
+        will  be totalSum - 2*sum, by which we'll update
+        res  */
+		if(u!=0 && Math.abs(totalWt - 2*sum) < res.sum) {
+			res.sum = Math.abs(totalWt - 2*sum);
+		}
+		
+	}
+	/**
+	 * Description - Find the minimum number of moves needed to move from one cell of matrix to another
+	 * @param matrix
+	 * @param N
+	 * @return
+	 */
+	public int minimumMovePath(int[][] matrix, int N) {
+		int s = -1,d = -1;
+		int V=N*N+2;
+		Graph g = new Graph(V);
+		
+		int k=1;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				
+				int u=matrix[i][j];
+				
+				if(u!=0) {
+					if(isSafe(i,j+1, matrix, N)) {
+						g.addUnDirectedEdge(k, k+1);
+					}
+					
+					if(isSafe(i,j-1, matrix, N)) {
+						g.addUnDirectedEdge(k, k-1);
+					}
+					if(isSafe(i+1,j, matrix, N)) {
+						g.addUnDirectedEdge(k, k+N);
+					}
+					if(isSafe(i-1,j, matrix, N)) {
+						g.addUnDirectedEdge(k, k-N);
+					}
+				}
+				
+				// source index
+	            if( matrix[i][j] == 1 )
+	                s = k ;
+	 
+	            // destination index
+	            if (matrix[i][j] == 2)
+	                d = k;
+	            k++;
+			}
+			
+		}
+		
+		return bfsMinimumMovePath(g,s,d);
+	}
+	
+	private int bfsMinimumMovePath(Graph g, int s, int d) {
+		int[] level = new int[g.getV()];
+		Arrays.fill(level, -1);
+		level[s]=0;
+		
+		boolean[] visited = new boolean[g.getV()];
+		
+		List<Integer> qu = new LinkedList<>();
+		qu.add(s);
+		
+		while(!qu.isEmpty()) {
+			int curr_size = qu.size();
+			while(curr_size>0) {
+				Integer u = qu.remove(0);
+				visited[u] = true;
+				curr_size--;
+				
+				Iterator<Integer> vi = g.getAdjListArr()[u].iterator();
+				while(vi.hasNext()) {
+					Integer v = vi.next();
+					if (!visited[v]) {
+						qu.add(v);
+						level[v] = level[u] + 1;
+					}
+				}
+				
+			}
+		}
+		
+		return level[d];
+	}
+
+	private boolean isSafe(int i, int j, int[][] matrix, int N) {
+		if((i<0 || i>=N) || (j<0 || j>=N) || (matrix[i][j]==0))
+			return false;
+		return true;
+	}
+	/**
+	 * Description - Minimum steps to reach target by a Knight | Set 1
+	   Given a square chessboard of N x N size, the position of Knight and position of a target is given. We need to find out minimum steps a Knight will take to reach the target position.
+	 * @param knightPos
+	 * @param knightDest
+	 * @param N
+	 * @return
+	 */
+	public int minimumStepsByKnight(int[] knightPos, int[] knightDest, int N) {
+		// x and y direction, where a knight can move.
+		int[] dx = {-2, -1, 1, 2, -2, -1, 1, 2};
+		int[] dy = {-1, -2, -2, -1, 1, 2, 2, 1};
+		
+		// queue for storing states of knight in board.
+		List<Pair> qu = new LinkedList<Pair>();
+		qu.add(new Pair(knightPos[0], knightPos[1], 0));
+		
+		boolean[][] visited = new boolean[N+1][N+1];
+		visited[knightPos[0]][knightPos[1]] = true;
+		
+		// loop untill we have one element in queue
+		while(!qu.isEmpty()) {
+			Pair u = qu.remove(0);
+			
+			int x=u.first;
+			int y=u.second;
+			// if current cell is equal to target cell, return its distance
+			/*if(u.first==knightDest[0] && u.second==knightDest[0])
+				return u.dist;*/
+			// Add all possible next move from current position
+			for(int i=0; i<8;i++) {
+				if(isInside(x+dx[i], y+dy[i], N) && !visited[x+dx[i]][y+dy[i]]) {
+					Pair v = new Pair(x+dx[i], y+dy[i], u.dist+1);
+					
+					qu.add(v);
+					visited[x+dx[i]][y+dy[i]] = true;
+					
+					if(v.first==knightDest[0] && v.second==knightDest[0])
+						return v.dist;
+				}
+			}
+		}
+		
+		return -1;
+	}
+	
+	private boolean isInside(int x, int y, int n) {
+		if((x>=1 && x<=n) && (y>=1 && y<=n))
+			return true;
+		return false;
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -1808,7 +2054,7 @@ public class IntroDFSnBFSQ {
 		
 		kDistantNode(gh, mn, 3);*/
 		
-		Graph bg = new Graph(15);
+		/*Graph bg = new Graph(15);
 		bg.addUnDirectedEdge(0, 4);
 		bg.addUnDirectedEdge(1, 4);
 		
@@ -1831,7 +2077,7 @@ public class IntroDFSnBFSQ {
 		bg.addUnDirectedEdge(10, 13);
 		bg.addUnDirectedEdge(10, 14);
 		
-		biDirectionalTraversal(bg, 0, 14);
+		biDirectionalTraversal(bg, 0, 14);*/
 		
 		/*
 		 * int edges[][] = { {0, 1}, {2, 1}, {3, 2}, {3, 4}, {5, 4}, {5, 6}, {7, 6} };
@@ -1842,12 +2088,38 @@ public class IntroDFSnBFSQ {
 		/*int[] wt = {2,3,5,6};
 		
 		weightOnScale(wt, 10);*/
-		int n=2;
+		/*int n=2;
 		Graph g = new Graph(n*n + 1);
 		g.addUnDirectedEdge(1, 2);
 		g.addUnDirectedEdge(2, 4);
 		
-		System.out.println(countNonAccessible(g, n));
+		System.out.println(countNonAccessible(g, n));*/
+		
+		/*Graph g = new Graph(4);
+		g.addUnDirectedEdge(0, 1);
+		g.addUnDirectedEdge(1, 2);
+		g.addUnDirectedEdge(2, 3);
+		
+		System.out.println((new IntroDFSnBFSQ()).maxProductOfTwoPaths(g, 4)); // Need to look more into details.
+		
+		Graph gd = new Graph(7);
+		gd.addUnDirectedEdge(0, 1);
+		gd.addUnDirectedEdge(0, 2);
+		gd.addUnDirectedEdge(0, 3);
+		gd.addUnDirectedEdge(2, 4);
+		gd.addUnDirectedEdge(2, 5);
+		gd.addUnDirectedEdge(3, 6);
+		
+		int[] weights = {4, 2, 1, 6, 3, 5, 2};
+		
+		System.out.println((new IntroDFSnBFSQ()).getMinSubtreeSumDiff(gd, weights, 7));*/
+		
+		/*int[][] matrix = {{ 3 , 3 , 1 , 0 },{ 3 , 0 , 3 , 3 },{ 2 , 3 , 0 , 3 },{ 0 , 3 , 3 , 3 }};
+		
+		System.out.println((new IntroDFSnBFSQ()).minimumMovePath(matrix, 4));*/
+		int[] ks = {1,1};
+		int[] kd = {30,30};
+		System.out.println((new IntroDFSnBFSQ()).minimumStepsByKnight(ks, kd, 30));
 
 	}
 	
@@ -1856,29 +2128,35 @@ public class IntroDFSnBFSQ {
 	}
 	
 	class Pair{
-		int first, second;
+		int first, second, dist;
 		
 		public Pair(int first, int second) {
 			this.first=first;
 			this.second=second;
 		}
-
+		public Pair(int first, int second, int dist) {
+			this.first=first;
+			this.second=second;
+			this.dist=dist;
+		}
+		public int getDist() {
+			return dist;
+		}
+		public void setDist(int dist) {
+			this.dist = dist;
+		}
 		public int getFirst() {
 			return first;
 		}
-
 		public void setFirst(int first) {
 			this.first = first;
 		}
-
 		public int getSecond() {
 			return second;
 		}
-
 		public void setSecond(int second) {
 			this.second = second;
 		}
-
 		@Override
 		public int hashCode() {
 			final int prime = 31;
