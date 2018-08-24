@@ -1782,6 +1782,54 @@ public class IntroDFSnBFSQ {
 		return false;
 	}
 	
+	/**
+	 * Description - Minimum number of operation required to convert number x into y
+					Given a initial number x and two operations which are given below:
+
+					Multiply number by 2.
+					Subtract 1 from the number.
+					
+					Constraints:
+					1 <= x, y <= 10000
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public int minimumOperations(int x, int y) {
+		List<Pair> qu = new LinkedList<>();
+		qu.add(new Pair(x, 0, 0));
+		boolean[] visited = new boolean[10000]; // Keeping in mind that 1<=x,y<=10000
+		
+		while(!qu.isEmpty()) {
+			Pair u =qu.remove(0);
+			visited[u.first] = true;
+			
+			if(u.first == y)
+				return u.dist;
+			else if(u.first*2 == y || u.first-1 == y)
+				return u.dist+1;
+			
+			int child1=u.first*2;
+			int child2=u.first-1;
+			
+			if(child1>=10000 || child2>=10000) {
+				System.err.println("Operation out of 1<=x,y<=10000 range");
+				return -1;
+			}
+			
+			if (!visited[child1]) {
+				qu.add(new Pair(child1, 0, u.dist+1));
+				visited[child1]=true;
+			}
+			if(child2>=0 && !visited[child2]) {
+				qu.add(new Pair(child2, 0, u.dist+1));
+				visited[child2]=true;
+			}
+			
+		}
+		return -1;
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -2120,6 +2168,8 @@ public class IntroDFSnBFSQ {
 		int[] ks = {1,1};
 		int[] kd = {30,30};
 		System.out.println((new IntroDFSnBFSQ()).minimumStepsByKnight(ks, kd, 30));
+		
+		System.out.println((new IntroDFSnBFSQ()).minimumOperations(4, 6));
 
 	}
 	
