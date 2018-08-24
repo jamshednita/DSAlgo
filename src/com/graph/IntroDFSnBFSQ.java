@@ -1830,6 +1830,106 @@ public class IntroDFSnBFSQ {
 		return -1;
 	}
 	
+	/**
+	 * Description - Minimum steps to reach end of array under constraints.
+	 * @param inArr
+	 * @param N
+	 * @return
+	 */
+	public static int minimumStepsToArrayEnd(int[] inArr, int N) {
+		boolean[] visited = new boolean[N]; // To Track Visited Nodes
+		int[] dist = new int[N]; // To Track distance/level in BFS
+		List<Integer>[] sameValueList = new ArrayList[10]; // Array of list containing indexes of same values.
+		
+		for (int i = 0; i < inArr.length; i++) {
+			if(sameValueList[inArr[i]] == null)
+				sameValueList[inArr[i]] = new ArrayList<>();
+			
+			sameValueList[inArr[i]].add(i);
+		}
+		
+		List<Integer> qu = new LinkedList<>(); // Queue for BFS
+		qu.add(0);
+		visited[0] = true;
+		dist[0] = 0;
+		
+		while(!qu.isEmpty()) {
+			Integer u = qu.remove(0);
+			
+			int left = u-1;
+			int right = u+1;
+			
+			List<Integer> uValueList = sameValueList[inArr[u]];
+			if(left == N-1 || right == N-1 || uValueList.contains(N-1))
+				return dist[u]+1;
+			// Check for left non-vsited node.
+			if(left>=0 && left<N && !visited[left]) {
+				qu.add(left);
+				visited[left]=true;
+				dist[left]=dist[u]+1;
+			}
+			// Check for right non-vsited node.
+			if(right>=0 && right<N && !visited[right]) {
+				qu.add(right);
+				visited[right]=true;
+				dist[right]=dist[u]+1;
+			}
+			
+			Iterator<Integer> vi = uValueList.iterator();
+			while(vi.hasNext()) {
+				Integer v = vi.next();
+				
+				if(v!=u && !visited[v]) {
+					qu.add(v);
+					visited[v]=true;
+					dist[v]=dist[u]+1;
+				}
+			}
+		}
+		
+		
+		return -1;
+	}
+	/**
+	 * Description - Find the smallest binary digit multiple of given number
+		A decimal number is called binary digit number if its digits are binary. For example, 102 is not a binary digit number and 101 is.
+	 * @param N
+	 * @return
+	 */
+	public static String leastBinaryMultiple(final int N) {
+		Set<Integer> rem = new HashSet<Integer>();
+		List<String> qu = new LinkedList<>();
+		
+		qu.add("1");
+		rem.add((new Integer("1"))%N);
+		
+		while(!qu.isEmpty()) {
+			String u =qu.remove(0);
+			
+			if(((new Integer(u))%N == 0))
+					return u;
+			
+			String v1 = u+"0";
+			String v2 = u+"1";
+			
+			if(((new Integer(v1))%N == 0))
+				return v1;
+			else if(((new Integer(v2))%N == 0))
+				return v2;
+			
+			if(!rem.contains((new Integer(v1))%N)) {
+				rem.add((new Integer(v1))%N);
+				qu.add(v1);
+			}
+			
+			if(!rem.contains((new Integer(v2))%N)) {
+				rem.add((new Integer(v2))%N);
+				qu.add(v2);
+			}
+		}
+		
+		return null;
+	}
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -2170,6 +2270,11 @@ public class IntroDFSnBFSQ {
 		System.out.println((new IntroDFSnBFSQ()).minimumStepsByKnight(ks, kd, 30));
 		
 		System.out.println((new IntroDFSnBFSQ()).minimumOperations(4, 6));
+		
+		/*int[] arr = {0, 1, 2, 3, 4, 5, 6, 7, 5, 4,3, 6, 0, 1, 2, 3, 4, 5, 7};// {5, 4, 2, 5, 0};
+		System.out.println(" Minimum steps to reach to the end of array : "+minimumStepsToArrayEnd(arr, 19));*/
+		
+		System.out.println(leastBinaryMultiple(17));
 
 	}
 	
