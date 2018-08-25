@@ -1930,6 +1930,90 @@ public class IntroDFSnBFSQ {
 		
 		return null;
 	}
+	
+	/**
+	 * Description - Roots of a tree which give minimum height. Given an undirected graph, which has tree characteristics. It is possible to choose any node as root, the task is to find those nodes only which minimize the height of tree.
+	 * @param gt
+	 * @param V
+	 */
+	public static void rootForMinHight(Graph gt, int V) {
+		int[] degree = new int[V];
+		
+		for (int i = 0; i < V; i++) {
+			degree[i] = gt.getAdjListArr()[i].size();
+		}
+		
+		List<Integer> qu = new LinkedList<>();
+		
+		for (int i = 0; i < V; i++) {
+			if(degree[i] == 1)
+				qu.add(i);
+		}
+		
+		while(V > 2) {
+			int level = qu.size();
+			
+			for (int i = 0; i<level; i++) {
+				Integer u = qu.remove(0);
+				V--;
+				
+				Iterator<Integer> vi = gt.getAdjListArr()[u].iterator();
+				while(vi.hasNext()) {
+					Integer v = vi.next();
+					 degree[v]-=1;
+					 
+					 if(degree[v] == 1)
+						 qu.add(v);
+					
+				}
+				
+			}
+		}
+		
+		System.out.println(qu);
+	}
+	/**
+	 * Description - Stepping Numbers
+		Given two integers ‘n’ and ‘m’, find all the stepping numbers in range [n, m]. A number is called stepping number if all adjacent digits have an absolute difference of 1. 321 is a Stepping Number while 421 is not.
+	 * @param n
+	 * @param m
+	 */
+	public static void displaySteppingNum(int n, int m) {
+		for (int i = 0; i <= 9; i++) {
+			displaySteppingNumBFS(n,m,i);
+		}
+	}
+
+	private static void displaySteppingNumBFS(int n, int m, int currSN) {
+		Queue<Integer> bfsqu = new LinkedList<>();
+		bfsqu.add(currSN);
+		
+		while(!bfsqu.isEmpty()) {
+			Integer steppingNum = bfsqu.poll();
+			// if this steppingNum is in range.
+			if(steppingNum>=n && steppingNum<=m)
+				System.out.print(steppingNum + " ");
+			// Explore neibour only if curr steppingNum is not zero and less than m.
+			if(steppingNum!=0 && steppingNum<m) {
+				int lastDigit = steppingNum%10;
+				
+				int neighburA = steppingNum*10 + lastDigit-1;
+				int neighburB = steppingNum*10 + lastDigit+1;
+				
+				if(lastDigit == 0) {
+					bfsqu.add(neighburB);
+				}else if(lastDigit == 9) {
+					bfsqu.add(neighburA);
+				}else {
+					bfsqu.add(neighburA);
+					bfsqu.add(neighburB);
+				}
+			}
+			
+		}
+		
+	}
+	
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -2275,6 +2359,32 @@ public class IntroDFSnBFSQ {
 		System.out.println(" Minimum steps to reach to the end of array : "+minimumStepsToArrayEnd(arr, 19));*/
 		
 		System.out.println(leastBinaryMultiple(17));
+		
+		/*Graph gt = new Graph(5);
+		gt.addUnDirectedEdge(0, 2);
+		gt.addUnDirectedEdge(1, 2);
+		gt.addUnDirectedEdge(2, 3);
+		gt.addUnDirectedEdge(3, 4);*/
+		
+		/*Graph gt = new Graph(7);
+		gt.addUnDirectedEdge(0, 3);
+		gt.addUnDirectedEdge(1, 3);
+		gt.addUnDirectedEdge(2, 3);
+		gt.addUnDirectedEdge(3, 4);
+		gt.addUnDirectedEdge(5, 4);
+		gt.addUnDirectedEdge(5, 6);*/
+		
+		Graph gt = new Graph(7); // This test-case is failing
+		gt.addUnDirectedEdge(0, 1);
+		gt.addUnDirectedEdge(1, 2);
+		gt.addUnDirectedEdge(1, 3);
+		gt.addUnDirectedEdge(2, 4);
+		gt.addUnDirectedEdge(3, 5);
+		gt.addUnDirectedEdge(4, 6);
+		
+		rootForMinHight(gt, 7);
+		
+		displaySteppingNum(0, 51);
 
 	}
 	
