@@ -2013,7 +2013,81 @@ public class IntroDFSnBFSQ {
 		}
 		
 	}
+	/**
+	 * Description - Sum of the minimum elements in all connected components of an undirected graph.
+	 * @param g
+	 * @param V
+	 * @param values
+	 * @return
+	 */
+	public static int minSumConnectedComponents(Graph g, int V, int[] values) {
+		int minSum=0;
+		boolean[] visited = new boolean[V];
+		
+		for (int i = 0; i < V; i++) {
+			if(!visited[i]) {
+				minSum+=minSumConnectedComponentsDFS(g, visited, i, values);
+			}
+		}
+		
+		return minSum;
+	}
 	
+	private static int minSumConnectedComponentsDFS(Graph g, boolean[] visited, int u, int[] values) {
+		visited[u] = true;
+		int retVal = Integer.MAX_VALUE;
+		
+		Iterator<Integer> vi = g.getAdjListArr()[u].iterator();
+		while (vi.hasNext()) {
+			Integer v = (Integer) vi.next();
+			if(!visited[v]) {
+				visited[v]=true;
+				retVal = minSumConnectedComponentsDFS(g, visited, v, values);
+			}
+		}
+		
+		return Math.min(values[u], retVal);
+	}
+	/**
+	 * Description - Check if two nodes are on same path in a tree. Using inTime and outTime concept and DFS.
+	 * @param g
+	 * @param inTime
+	 * @param outTime
+	 */
+	public void populateInOutTime(Graph g, int[] inTime, int[] outTime) {
+		boolean[] visited = new boolean[g.getV()];
+		populateInOutTimeDFS(g, 0, visited, inTime, outTime, new CustSum());
+	}private void populateInOutTimeDFS(Graph g, int u,  boolean[] visited, int[] inTime, int[] outTime, CustSum custSum) {
+		visited[u] = true;
+		custSum.sum+=1;
+		inTime[u] = custSum.sum;
+		
+		Iterator<Integer> vi = g.getAdjListArr()[u].iterator();
+		
+		while (vi.hasNext()) {
+			Integer v = (Integer) vi.next();
+			
+			if(!visited[v]) {
+				visited[v] = true;
+				/*custSum.sum+=1;
+				inTime[v] = custSum.sum;*/
+				
+				populateInOutTimeDFS(g, v, visited, inTime, outTime, custSum);
+			}
+			/*custSum.sum+=1;
+			outTime[v] = custSum.sum;*/
+		}
+		
+		custSum.sum+=1;
+		outTime[u] = custSum.sum;
+	}
+	public static boolean inSamePath(int[] inTime, int[] outTime, int u, int v) {
+		if((inTime[u]<inTime[v] && outTime[u]>outTime[v]) || (inTime[u]>inTime[v] && outTime[u]<outTime[v]))
+			return true;
+		
+		return false;
+	}
+
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -2349,16 +2423,16 @@ public class IntroDFSnBFSQ {
 		/*int[][] matrix = {{ 3 , 3 , 1 , 0 },{ 3 , 0 , 3 , 3 },{ 2 , 3 , 0 , 3 },{ 0 , 3 , 3 , 3 }};
 		
 		System.out.println((new IntroDFSnBFSQ()).minimumMovePath(matrix, 4));*/
-		int[] ks = {1,1};
+		/*int[] ks = {1,1};
 		int[] kd = {30,30};
 		System.out.println((new IntroDFSnBFSQ()).minimumStepsByKnight(ks, kd, 30));
 		
-		System.out.println((new IntroDFSnBFSQ()).minimumOperations(4, 6));
+		System.out.println((new IntroDFSnBFSQ()).minimumOperations(4, 6));*/
 		
 		/*int[] arr = {0, 1, 2, 3, 4, 5, 6, 7, 5, 4,3, 6, 0, 1, 2, 3, 4, 5, 7};// {5, 4, 2, 5, 0};
 		System.out.println(" Minimum steps to reach to the end of array : "+minimumStepsToArrayEnd(arr, 19));*/
 		
-		System.out.println(leastBinaryMultiple(17));
+		/*System.out.println(leastBinaryMultiple(17));*/
 		
 		/*Graph gt = new Graph(5);
 		gt.addUnDirectedEdge(0, 2);
@@ -2374,7 +2448,7 @@ public class IntroDFSnBFSQ {
 		gt.addUnDirectedEdge(5, 4);
 		gt.addUnDirectedEdge(5, 6);*/
 		
-		Graph gt = new Graph(7); // This test-case is failing
+		/*Graph gt = new Graph(7); // This test-case is failing
 		gt.addUnDirectedEdge(0, 1);
 		gt.addUnDirectedEdge(1, 2);
 		gt.addUnDirectedEdge(1, 3);
@@ -2384,8 +2458,38 @@ public class IntroDFSnBFSQ {
 		
 		rootForMinHight(gt, 7);
 		
-		displaySteppingNum(0, 51);
+		displaySteppingNum(0, 51);*/
+		
+		/*Graph gm = new Graph(10);
+		int[] values = {1, 6, 2, 7, 3, 8, 4, 9, 5, 10};
+		
+		gm.addUnDirectedEdge(0, 1);
+		gm.addUnDirectedEdge(2, 3);
+		gm.addUnDirectedEdge(4, 5);
+		gm.addUnDirectedEdge(6, 7);
+		gm.addUnDirectedEdge(8, 9);
+		
+		System.out.println(minSumConnectedComponents(gm, 10, values));*/
+		
+		Graph gio = new Graph(9);
+		int[] inTime = new int[9];
+		int[] outTime = new int[9];
 
+		gio.addUnDirectedEdge(0, 1);
+		gio.addUnDirectedEdge(0, 2);
+		gio.addUnDirectedEdge(1, 3);
+		gio.addUnDirectedEdge(1, 4);
+		gio.addUnDirectedEdge(2, 5);
+		gio.addUnDirectedEdge(4, 6);
+		gio.addUnDirectedEdge(4, 7);
+		gio.addUnDirectedEdge(4, 8);
+		
+		(new IntroDFSnBFSQ()).populateInOutTime(gio, inTime, outTime);
+		//System.out.println(inTime + "  " + outTime);
+		System.out.println(inSamePath(inTime, outTime, 1, 4));
+		System.out.println(inSamePath(inTime, outTime, 2, 6));
+		System.out.println(inSamePath(inTime, outTime, 7, 5));
+		System.out.println(inSamePath(inTime, outTime, 0, 8));
 	}
 	
 	class CustSum{
