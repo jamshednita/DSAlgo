@@ -2087,6 +2087,43 @@ public class IntroDFSnBFSQ {
 		
 		return false;
 	}
+	
+	/**
+	 * Description - A matrix probability question Given a rectangular matrix, we
+	 * can move from current cell in 4 directions with equal probability. The 4
+	 * directions are right, left, top or bottom. Calculate the Probability that
+	 * after N moves from a given position (i, j) in the matrix, we will not cross
+	 * boundaries of the matrix at any point.
+	 * 
+	 * @param m
+	 * @param n
+	 * @param i
+	 * @param j
+	 * @param N
+	 * @return
+	 */
+	public static float matrixProbability(int m, int n, int i, int j, int N) {
+		float prob = 0.0f;
+		if(!isInsideMatrix(m, n, i, j)) {
+			return 0;
+		}
+		
+		if(N==0)
+			return 1;
+		
+		prob+=matrixProbability(m, n, i-1, j, N-1)*0.25; 	// TOP element
+		prob+=matrixProbability(m, n, i+1, j, N-1)*0.25;	// BOTTOM element
+		prob+=matrixProbability(m, n, i, j-1, N-1)*0.25; 	// LEFT element
+		prob+=matrixProbability(m, n, i, j+1, N-1)*0.25;	// RIGHT element
+		
+		return prob;
+	}
+
+	private static boolean isInsideMatrix(int m, int n, int i, int j) {
+		if(i>=0 && i<m && j>=0 && j<n)
+			return true;
+		return false;
+	}
 
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
@@ -2471,7 +2508,7 @@ public class IntroDFSnBFSQ {
 		
 		System.out.println(minSumConnectedComponents(gm, 10, values));*/
 		
-		Graph gio = new Graph(9);
+		/*Graph gio = new Graph(9);
 		int[] inTime = new int[9];
 		int[] outTime = new int[9];
 
@@ -2489,7 +2526,18 @@ public class IntroDFSnBFSQ {
 		System.out.println(inSamePath(inTime, outTime, 1, 4));
 		System.out.println(inSamePath(inTime, outTime, 2, 6));
 		System.out.println(inSamePath(inTime, outTime, 7, 5));
-		System.out.println(inSamePath(inTime, outTime, 0, 8));
+		System.out.println(inSamePath(inTime, outTime, 0, 8));*/
+		
+		// matrix size
+	    int m = 5, n = 5;
+	 
+	    // coordinates of starting point
+	    int i = 3, j = 1; // i = 2, j = 2;
+	 
+	    // Number of steps
+	    int N = 2;
+	 
+	    System.out.println(matrixProbability(m, n, i, j, N));
 	}
 	
 	class CustSum{
