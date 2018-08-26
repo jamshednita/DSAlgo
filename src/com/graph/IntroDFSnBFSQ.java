@@ -2125,6 +2125,60 @@ public class IntroDFSnBFSQ {
 		return false;
 	}
 
+	/**
+	 * Description - Find length of the largest region in Boolean Matrix.Consider a
+	 * matrix with rows and columns, where each cell contains either a ‘0’ or a ‘1’
+	 * and any cell containing a 1 is called a filled cell. Two cells are said to be
+	 * connected if they are adjacent to each other horizontally, vertically, or
+	 * diagonally .If one or more filled cells are also connected, they form a
+	 * region. find the length of the largest region.
+	 * 
+	 * @param matrix
+	 * @param m
+	 * @param n
+	 * @return
+	 */
+	public static int largestRegion(boolean[][] matrix, int m, int n) {
+		int result = Integer.MIN_VALUE;
+		boolean[][] visited = new boolean[m][n];
+		
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				if(isSafeUnvisisted(matrix, visited, i, j, m, n)) {
+					int dfsLen = largestRegionDFS(matrix, visited, i, j, m, n);
+					
+					result = Math.max(result, dfsLen);
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	private static int largestRegionDFS(boolean[][] matrix, boolean[][] visited, int i, int j, int m, int n) {
+		visited[i][j] = true;
+		int len=1;
+		
+		int[] row = {-1, -1, -1, 0, 1, 1, 1, 0};
+		int[] col = {-1, 0, 1, 1, 1, 0, -1, -1};
+		
+		for (int k = 0; k < 8; k++) {
+			if(isSafeUnvisisted(matrix, visited, i+row[k], j+col[k], m, n)) {
+				//len++;
+				//visited[i+row[k]][j+col[k]] = true;
+				len+=largestRegionDFS(matrix, visited, i+row[k], j+col[k], m, n);
+			}
+		}
+		
+		return len;
+	}
+
+	private static boolean isSafeUnvisisted(boolean[][] matrix, boolean[][] visited, int i, int j, int m, int n) {
+		if(i>=0 && i<m && j>=0 && j<n && !visited[i][j] && matrix[i][j])
+			return true;
+		return false;
+	}
+
 	public static void main(String[] args) {
 		/*Graph grph = new Graph(5);
 		grph.addUnDirectedEdge(0, 1);
@@ -2528,7 +2582,7 @@ public class IntroDFSnBFSQ {
 		System.out.println(inSamePath(inTime, outTime, 7, 5));
 		System.out.println(inSamePath(inTime, outTime, 0, 8));*/
 		
-		// matrix size
+		/*// matrix size
 	    int m = 5, n = 5;
 	 
 	    // coordinates of starting point
@@ -2537,7 +2591,15 @@ public class IntroDFSnBFSQ {
 	    // Number of steps
 	    int N = 2;
 	 
-	    System.out.println(matrixProbability(m, n, i, j, N));
+	    System.out.println(matrixProbability(m, n, i, j, N));*/
+		
+		boolean[][] M = { {false, false, true, true, false},
+                {true, false, true, true, false},
+                {false, true, false, false, false},
+                {true, false, false, false, true}};
+		
+		System.out.println(largestRegion(M, 4, 5));
+
 	}
 	
 	class CustSum{
