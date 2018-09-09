@@ -24,6 +24,24 @@ public class WeightedGraph {
 		adjList.add(new AdjListNode(j, w));
 		adjListArr[i]=adjList;
 	}
+	
+	public void addUnDirectedEdge(int i, int j, int w) {
+		List<AdjListNode> iadjList=adjListArr[i];
+		
+		if(iadjList==null)
+			iadjList = new LinkedList<>();
+		
+		iadjList.add(new AdjListNode(j, w));
+		adjListArr[i]=iadjList;
+		
+		List<AdjListNode> jadjList=adjListArr[j];
+		
+		if(jadjList==null)
+			jadjList = new LinkedList<>();
+		
+		jadjList.add(new AdjListNode(i, w));
+		adjListArr[j]=jadjList;
+	}
 
 	public int getV() {
 		return V;

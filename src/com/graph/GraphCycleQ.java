@@ -211,6 +211,45 @@ public class GraphCycleQ {
         // usable again
 		marked[u] = false;
 	}
+	/**
+	 * Description - Check if there is a cycle with odd weight sum in an undirected graph.
+	 * @param wg
+	 * @return
+	 */
+	public static boolean isOddWeightCycle(WeightedGraph wg) {
+		int[] weights = new int[wg.getV()];
+		boolean[] visited = new boolean[wg.getV()];
+		
+		for (int i = 0; i < wg.getV(); i++) {
+			if(!visited[i] && (wg.getAdjListArr()[i]!=null && !wg.getAdjListArr()[i].isEmpty())) {
+				weights[i]=0;
+				if(isOddWeightCycleDFS(wg, i, -1, visited, weights))
+					return true;
+			}
+		}
+		
+		return false;
+	}
+	private static boolean isOddWeightCycleDFS(WeightedGraph wg, int u, int parent, boolean[] visited, int[] weights) {
+		visited[u] = true;
+		Iterator<AdjListNode> vi = wg.getAdjListArr()[u].iterator();
+		
+		while(vi.hasNext()) {
+			AdjListNode v = vi.next();
+			
+			if(!visited[v.getVertex()]) {
+				weights[v.getVertex()] = weights[u]+v.getWeight();
+				if(isOddWeightCycleDFS(wg, v.getVertex(), u, visited, weights))
+					return true;
+			}else if(v.getVertex() != parent) {
+				weights[v.getVertex()] = weights[u]+v.getWeight();
+				if(weights[v.getVertex()]%2 != 0)
+					return true;
+			}
+		}
+		
+		return false;
+	}
 
 	public static void main(String[] args) {
 		/*Graph dirG = new Graph(4);
@@ -236,7 +275,7 @@ public class GraphCycleQ {
         System.out.println("Has Cycle :: "+detectCycleInUnDirG(udg));*/
 		
 		// Prepare Directed Graph Without UnDirected Edges.
-		Graph tpsg = new Graph(6);
+		/*Graph tpsg = new Graph(6);
 		tpsg.addDirectedEdge(0, 1);
 		tpsg.addDirectedEdge(0, 5);
 
@@ -267,7 +306,21 @@ public class GraphCycleQ {
                 		{0, 1, 0, 1, 0}};
 		int n = 4;
 		
-		System.out.println(new GraphCycleQ().countCycles(graph, 5, n));
+		System.out.println(new GraphCycleQ().countCycles(graph, 5, n));*/
+		
+		WeightedGraph wg = new WeightedGraph(4);
+		wg.addUnDirectedEdge(0, 1, 12);
+		wg.addUnDirectedEdge(1, 2, 1);
+		wg.addUnDirectedEdge(2, 3, 1);
+		wg.addUnDirectedEdge(3, 0, 20);
+		
+		System.out.println("Is odd weight cycle present :: "+isOddWeightCycle(wg));
+		WeightedGraph wg1 = new WeightedGraph(5);
+		wg1.addUnDirectedEdge(1, 2, 1);
+		wg1.addUnDirectedEdge(3, 2, 1);
+		wg1.addUnDirectedEdge(3, 1, 1);
+		
+		System.out.println("Is odd weight cycle present :: "+isOddWeightCycle(wg1));
 	}
 	
 	class CustSum{
