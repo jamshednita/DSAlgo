@@ -212,7 +212,7 @@ public class GraphCycleQ {
 		marked[u] = false;
 	}
 	/**
-	 * Description - Check if there is a cycle with odd weight sum in an undirected graph.
+	 * Description - Check if there is a cycle with odd weight sum in an undirected graph. This same solution can be tweeked to work for odd length loop detection.
 	 * @param wg
 	 * @return
 	 */
@@ -238,11 +238,11 @@ public class GraphCycleQ {
 			AdjListNode v = vi.next();
 			
 			if(!visited[v.getVertex()]) {
-				weights[v.getVertex()] = weights[u]+v.getWeight();
+				weights[v.getVertex()] = weights[u]+v.getWeight(); // Change this line to weights[v.getVertex()] = weights[u]+1 to solve ODD LENGTH LOOP check;
 				if(isOddWeightCycleDFS(wg, v.getVertex(), u, visited, weights))
 					return true;
 			}else if(v.getVertex() != parent) {
-				weights[v.getVertex()] = weights[u]+v.getWeight();
+				weights[v.getVertex()] = weights[u]+v.getWeight(); // Change this line to weights[v.getVertex()] = weights[u]+1 to solve ODD LENGTH LOOP check;
 				if(weights[v.getVertex()]%2 != 0)
 					return true;
 			}
