@@ -251,6 +251,77 @@ public class GraphCycleQ {
 		return false;
 	}
 
+	/**
+	 * Description - Check if a graphs has a cycle of odd length.
+	 * @param undirg
+	 * @return
+	 */
+	public boolean isOddCycle(Graph undirg) {
+		boolean[] visited = new boolean[undirg.getV()];
+		int[] lengthCount = new int[undirg.getV()];
+		
+		for (int i = 0; i < undirg.getV(); i++) {
+			if(!visited[i] && undirg.getAdjListArr()[i]!=null) {
+				lengthCount[i]=0; // Make starting node length zero
+				if(isOddCycleDFS(undirg, i, -1, lengthCount, visited))
+					return true;	
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean isOddCycleDFS(Graph g, int u, int parent, int[] lengthCount, boolean[] visited) {
+		visited[u]=true;
+		
+		Iterator<Integer> vi = g.getAdjListArr()[u].iterator();
+		while(vi.hasNext()) {
+			Integer v = vi.next();
+			if(!visited[v]) {
+				lengthCount[v]=lengthCount[u]+1;// Increase length count for child by 1.
+				if(isOddCycleDFS(g, v, u, lengthCount, visited))
+					return true;
+			}else if(v!=parent) {
+				//System.out.println(Math.abs(lengthCount[v]-lengthCount[u])+1);
+				if((Math.abs(lengthCount[v]-lengthCount[u])+1)%2 != 0)
+					return true;
+			}
+		}
+		
+		return false;
+	}
+	/**
+	 * Description - Clone a Directed Acyclic Graph
+					 A directed acyclic graph (DAG) is a graph which doesn’t contain a cycle and has directed edges. We are given a DAG, we need to clone it, i.e., create another graph that has copy of its vertices and edges connecting them.
+	 * @param orgGraph
+	 * @return
+	 */
+	public static Graph cloneDAG(Graph orgGraph) {
+		Graph clonedGraph = new Graph(orgGraph.getV());
+		boolean[] visited = new boolean[orgGraph.getV()];
+		
+		for (int i = 0; i < orgGraph.getV(); i++) {
+			if(!visited[i]) {
+				cloneDagDFS(i, orgGraph, clonedGraph, visited);
+			}
+		}
+		
+		return clonedGraph;
+	}
+
+	private static void cloneDagDFS(int u, Graph orgGraph, Graph clonedGraph, boolean[] visited) {
+		
+		Iterator<Integer> vi = orgGraph.getAdjListArr()[u].iterator();
+		while(vi.hasNext()) {
+			Integer v = vi.next();
+			
+			clonedGraph.addDirectedEdge(u, v);
+			cloneDagDFS(v, orgGraph, clonedGraph, visited);
+			
+		}
+		
+		visited[u] = true; // Mark visited only if all children are visited.
+	}
 	public static void main(String[] args) {
 		/*Graph dirG = new Graph(4);
 		
